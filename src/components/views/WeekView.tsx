@@ -155,6 +155,11 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
 
   const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
 
+  // Helper function to get day name for a date
+  const getDayName = (date: Date) => {
+    return dayNames[date.getDay()];
+  };
+
   return (
     <div className="h-screen flex flex-col">
       <NavigationBar
@@ -186,6 +191,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
             <div className="grid grid-cols-7 border-b">
               {weekDays.map((day, idx) => {
                 const isToday = formatDate(day) === formatDate(today);
+                const dayOfWeek = day.getDay(); // 0=일요일, 6=토요일
                 return (
                   <button
                     key={idx}
@@ -198,19 +204,19 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                     <div
                       className={cn(
                         'text-xs font-medium',
-                        idx === 0 && 'text-red-500',
-                        idx === 6 && 'text-blue-500',
-                        idx > 0 && idx < 6 && 'text-gray-600'
+                        dayOfWeek === 0 && 'text-red-500',
+                        dayOfWeek === 6 && 'text-blue-500',
+                        dayOfWeek > 0 && dayOfWeek < 6 && 'text-gray-600'
                       )}
                     >
-                      {dayNames[idx]}
+                      {getDayName(day)}
                     </div>
                     <div
                       className={cn(
                         'text-lg font-semibold mt-1',
                         isToday && 'text-teal-600',
-                        !isToday && idx === 0 && 'text-red-500',
-                        !isToday && idx === 6 && 'text-blue-500'
+                        !isToday && dayOfWeek === 0 && 'text-red-500',
+                        !isToday && dayOfWeek === 6 && 'text-blue-500'
                       )}
                     >
                       {day.getMonth() + 1}월 {day.getDate()}일
