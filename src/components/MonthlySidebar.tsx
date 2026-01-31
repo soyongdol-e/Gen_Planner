@@ -104,7 +104,7 @@ export function MonthlySidebar({
   });
   
   return (
-    <div className="w-80 border-r bg-gray-50 p-4 flex flex-col gap-4 overflow-y-auto md:block hidden">
+    <div className="w-80 border-r bg-gray-50 p-4 flex flex-col gap-4 overflow-y-auto">
       {/* Monthly Memo */}
       <div className="bg-white rounded-lg p-4 shadow-sm">
         <button
