@@ -101,8 +101,8 @@ export function YearView({ onMonthClick }: YearViewProps) {
         onClick={() => onMonthClick?.(currentYear, month)}
         className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
       >
-        {/* Month Title - 24px, Pretendard 700, #111111, Center aligned */}
-        <h3 className="text-[24px] font-bold leading-[150%] mb-1 text-center" style={{ color: '#111111' }}>
+        {/* Month Title - 24px, Pretendard 700, #111111, Center aligned, Tight line-height */}
+        <h3 className="text-[24px] font-bold leading-none mb-1 text-center" style={{ color: '#111111' }}>
           {month + 1}월
         </h3>
         
