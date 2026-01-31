@@ -140,37 +140,44 @@ export function YearView({ onMonthClick }: YearViewProps) {
   return (
     <div className="h-screen flex flex-col bg-white">
       {/* Navigation */}
-      <div className="flex items-center justify-center gap-6 pt-[62px] pb-8">
+      <div className="flex items-center justify-center pt-[62px] pb-8">
+        {/* Left Arrow Icon */}
         <button
           onClick={handlePrevYear}
           className="p-2 hover:bg-gray-50 rounded-full transition-colors"
         >
-          <ChevronLeft className="size-6" />
+          <ChevronLeft className="size-8 text-gray-600" />
         </button>
         
+        {/* Previous Year - 40px gap from icon */}
         <button
           onClick={() => handleYearClick(prevYear)}
-          className="text-heading-lg text-gray-300 hover:text-gray-400 transition-colors px-4"
+          className="text-[36px] font-bold leading-[150%] transition-colors ml-10"
+          style={{ color: '#E2E2E2' }}
         >
           {prevYear}
         </button>
         
-        <div className="text-display-lg font-bold px-8">
+        {/* Current Year - 120px gap from previous year */}
+        <div className="text-[60px] font-bold leading-[150%] mx-[120px]">
           {currentYear}
         </div>
         
+        {/* Next Year - 120px gap from current year */}
         <button
           onClick={() => handleYearClick(nextYear)}
-          className="text-heading-lg text-gray-300 hover:text-gray-400 transition-colors px-4"
+          className="text-[36px] font-bold leading-[150%] transition-colors"
+          style={{ color: '#E2E2E2' }}
         >
           {nextYear}
         </button>
         
+        {/* Right Arrow Icon - 40px gap from next year */}
         <button
           onClick={handleNextYear}
-          className="p-2 hover:bg-gray-50 rounded-full transition-colors"
+          className="p-2 hover:bg-gray-50 rounded-full transition-colors ml-10"
         >
-          <ChevronRight className="size-6" />
+          <ChevronRight className="size-8 text-gray-600" />
         </button>
       </div>
       
