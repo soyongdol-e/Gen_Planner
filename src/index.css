@@ -2,12 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
+/* KRDS Typography System */
 :root {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  
+  /* 폰트 렌더링 최적화 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f9fafb;
+  
+  /* KRDS 기본 타이포그래피 */
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 150%;
+  font-weight: 400;
+  letter-spacing: 0px;
+  color: #1a1a1a;
+}
+
+/* Heading 스타일 */
+h1 {
+  font-size: 40px;
+  line-height: 150%;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 32px;
+  line-height: 150%;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 24px;
+  line-height: 150%;
+  letter-spacing: 0px;
+  font-weight: 700;
+}
+
+h4 {
+  font-size: 19px;
+  line-height: 150%;
+  letter-spacing: 0px;
+  font-weight: 700;
+}
+
+h5 {
+  font-size: 17px;
+  line-height: 150%;
+  letter-spacing: 0px;
+  font-weight: 700;
+}
+
+h6 {
+  font-size: 15px;
+  line-height: 150%;
+  letter-spacing: 0px;
+  font-weight: 700;
+}
+
+/* 본문 텍스트 */
+p {
+  font-size: 17px;
+  line-height: 150%;
+  letter-spacing: 0px;
+  font-weight: 400;
+}
+
+/* 강조 텍스트 */
+strong, b {
+  font-weight: 700;
+}
+
+/* 버튼, Input, Textarea */
+button, input, textarea, select {
+  font-family: inherit;
 }
