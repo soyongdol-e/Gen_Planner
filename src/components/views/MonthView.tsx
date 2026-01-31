@@ -24,8 +24,9 @@ export default function MonthView() {
   const [memoCollapsed, setMemoCollapsed] = useState(false);
   
   const year = selectedDate.getFullYear();
-  const month = selectedDate.getMonth() + 1;
-  const calendarDays = getCalendarDays(year, month, weekStartsOn);
+  const month = selectedDate.getMonth();
+  const calendarDaysData = getCalendarDays(year, month, weekStartsOn);
+  const calendarDays = calendarDaysData.map(day => day.date);
 
   // Load events and memo when month changes
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function MonthView() {
   }, [year, month]);
 
   const loadEvents = async () => {
-    const fetchedEvents = await getEventsByMonth(year, month);
+    const fetchedEvents = await getEventsByMonth(year, month + 1);
     setEvents(fetchedEvents);
     
     // Group events by date
@@ -49,13 +50,13 @@ export default function MonthView() {
   };
 
   const loadMemo = async () => {
-    const memo = await getMonthlyMemo(year, month);
+    const memo = await getMonthlyMemo(year, month + 1);
     setMemoContent(memo?.content || '');
   };
 
   // Auto-save memo
   const handleSaveMemo = useCallback(async (content: string) => {
-    await saveMonthlyMemo(year, month, content);
+    await saveMonthlyMemo(year, month + 1, content);
   }, [year, month]);
 
   useAutoSave(memoContent, handleSaveMemo, 500);
@@ -240,7 +241,7 @@ export default function MonthView() {
                     const today = isToday(date);
                     const dateStr = formatDate(date);
                     const dayEvents = eventsByDate[dateStr] || [];
-                    const allDayEvents = dayEvents.filter(e => e.is_all_day);
+                    const allDayEvents = dayEvents.filter(e => e.isAllDay);
                     
                     return (
                       <div 

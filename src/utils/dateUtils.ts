@@ -10,9 +10,19 @@ import {
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
+// Get today's date
+export const getToday = (): Date => {
+  return new Date();
+};
+
 // Format date to YYYY-MM-DD
 export const formatDate = (date: Date): string => {
   return format(date, 'yyyy-MM-dd');
+};
+
+// Get month name (e.g., "1월", "2월")
+export const getMonthName = (month: number): string => {
+  return `${month + 1}월`;
 };
 
 // Format date to display string (e.g., "2026년 1월")
@@ -25,14 +35,22 @@ export const formatDay = (date: Date): string => {
   return format(date, 'd');
 };
 
-// Get calendar days for month view
+// Get week days for header (e.g., ["일", "월", "화", ...])
+export const getWeekDays = (locale: string = 'ko-KR'): string[] => {
+  if (locale === 'ko-KR') {
+    return ['일', '월', '화', '수', '목', '금', '토'];
+  }
+  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+};
+
+// Get calendar days for month view (returns object with date and isCurrentMonth)
 export const getCalendarDays = (
   year: number, 
-  month: number, 
+  month: number, // 0-indexed (0 = January)
   weekStartsOn: 0 | 1 = 0
-): Date[] => {
-  const firstDay = new Date(year, month - 1, 1);
-  const lastDay = new Date(year, month, 0);
+): Array<{ date: Date; isCurrentMonth: boolean }> => {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
   
   // Get the day of week for first day (0 = Sunday, 6 = Saturday)
   let firstDayOfWeek = firstDay.getDay();
@@ -43,7 +61,7 @@ export const getCalendarDays = (
   }
   
   // Calculate start date (might be from previous month)
-  const startDate = new Date(year, month - 1, 1 - firstDayOfWeek);
+  const startDate = new Date(year, month, 1 - firstDayOfWeek);
   
   // Get last day of week for last day of month
   let lastDayOfWeek = lastDay.getDay();
@@ -53,14 +71,17 @@ export const getCalendarDays = (
   
   // Calculate end date (might be from next month)
   const daysToAdd = weekStartsOn === 0 ? (6 - lastDayOfWeek) : (6 - lastDayOfWeek);
-  const endDate = new Date(year, month, lastDay.getDate() + daysToAdd);
+  const endDate = new Date(year, month + 1, lastDay.getDate() - lastDay.getDate() + 1 + daysToAdd);
   
   // Generate array of dates
-  const days: Date[] = [];
+  const days: Array<{ date: Date; isCurrentMonth: boolean }> = [];
   const current = new Date(startDate);
   
   while (current <= endDate) {
-    days.push(new Date(current));
+    days.push({
+      date: new Date(current),
+      isCurrentMonth: current.getMonth() === month
+    });
     current.setDate(current.getDate() + 1);
   }
   
@@ -72,9 +93,22 @@ export const isToday = (date: Date): boolean => {
   return isSameDay(date, new Date());
 };
 
+// Export isSameDay for external use
+export { isSameDay };
+
 // Check if date is in same month
 export const isInMonth = (date: Date, targetDate: Date): boolean => {
   return isSameMonth(date, targetDate);
+};
+
+// Check if date is Sunday
+export const isSunday = (date: Date): boolean => {
+  return date.getDay() === 0;
+};
+
+// Check if date is Saturday
+export const isSaturday = (date: Date): boolean => {
+  return date.getDay() === 6;
 };
 
 // Navigation helpers
@@ -83,13 +117,16 @@ export const getPrevMonth = (date: Date): Date => subMonths(date, 1);
 export const getNextDay = (date: Date): Date => addDays(date, 1);
 export const getPrevDay = (date: Date): Date => subDays(date, 1);
 
+// Export addMonths and startOfWeek for external use
+export { addMonths, startOfWeek };
+
 // Get week start date (for week view)
 export const getWeekStart = (date: Date, weekStartsOn: 0 | 1 = 0): Date => {
   return startOfWeek(date, { weekStartsOn });
 };
 
 // Get week dates (7 days)
-export const getWeekDays = (weekStart: Date): Date[] => {
+export const getWeekDaysDates = (weekStart: Date): Date[] => {
   const days: Date[] = [];
   for (let i = 0; i < 7; i++) {
     days.push(addDays(weekStart, i));

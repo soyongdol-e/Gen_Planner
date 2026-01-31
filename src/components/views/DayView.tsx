@@ -15,8 +15,14 @@ import EventModal from '../common/EventModal';
 import TimeTableGrid from '../common/TimeTableGrid';
 import TimeBlockModal from '../common/TimeBlockModal';
 
-export default function DayView() {
-  const { selectedDate, setSelectedDate, setCurrentView, timeTableUnit } = useApp();
+interface DayViewProps {
+  initialDate?: Date;
+  onMonthClick?: () => void;
+}
+
+export default function DayView({ initialDate, onMonthClick }: DayViewProps) {
+  const { selectedDate: contextDate, setSelectedDate, timeTableUnit } = useApp();
+  const selectedDate = initialDate || contextDate;
   const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [timeBlocks, setTimeBlocks] = useState<Event[]>([]);
@@ -42,8 +48,8 @@ export default function DayView() {
       getEventsByDate(dateStr)
     ]);
     setTasks(fetchedTasks);
-    setEvents(fetchedEvents.filter(e => e.is_all_day)); // Only all-day events in Event section
-    setTimeBlocks(fetchedEvents.filter(e => e.is_time_table)); // TimeTable blocks
+    setEvents(fetchedEvents.filter(e => e.isAllDay)); // Only all-day events in Event section
+    setTimeBlocks(fetchedEvents.filter(e => e.isTimeTable)); // TimeTable blocks
     setLoading(false);
   };
 
@@ -98,7 +104,7 @@ export default function DayView() {
   };
 
   const handleMonthClick = () => {
-    setCurrentView('month');
+    onMonthClick?.();
   };
 
   // Event handlers

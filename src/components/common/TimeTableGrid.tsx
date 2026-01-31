@@ -151,10 +151,10 @@ export default function TimeTableGrid({
 
           {/* Time Blocks */}
           {blocks.map(block => {
-            if (!block.start_time || !block.end_time) return null;
+            if (!block.startTime || !block.endTime) return null;
             
-            const top = calculateBlockTop(block.start_time, unit, config.cellHeight);
-            const height = calculateBlockHeight(block.start_time, block.end_time, unit, config.cellHeight);
+            const top = calculateBlockTop(block.startTime, unit, config.cellHeight);
+            const height = calculateBlockHeight(block.startTime, block.endTime, unit, config.cellHeight);
             
             return (
               <div
@@ -170,7 +170,7 @@ export default function TimeTableGrid({
                 onMouseDown={(e) => handleBlockMouseDown(e, block.id)}
               >
                 <div className="text-xs text-white font-medium truncate">
-                  {formatTimeDisplay(block.start_time)} - {formatTimeDisplay(block.end_time)}
+                  {formatTimeDisplay(block.startTime)} - {formatTimeDisplay(block.endTime)}
                 </div>
                 <div className="text-xs text-white truncate">
                   {block.title}

@@ -4,21 +4,28 @@ import {
   formatDate, 
   formatDay,
   getWeekStart,
-  getWeekDays
+  getWeekDaysDates
 } from '../../utils/dateUtils';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-export default function WeekView() {
-  const { selectedDate, setSelectedDate, setCurrentView, weekStartsOn } = useApp();
+interface WeekViewProps {
+  initialDate?: Date;
+  onMonthClick?: () => void;
+  onDayClick?: (date: Date) => void;
+}
+
+export default function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProps) {
+  const { selectedDate: contextDate, setSelectedDate, weekStartsOn } = useApp();
+  const selectedDate = initialDate || contextDate;
   const [weekStart, setWeekStart] = useState<Date>(getWeekStart(selectedDate, weekStartsOn));
-  const [weekDays, setWeekDays] = useState<Date[]>(getWeekDays(weekStart));
+  const [weekDays, setWeekDays] = useState<Date[]>(getWeekDaysDates(weekStart));
 
   // Update week when selectedDate changes
   useEffect(() => {
     const newWeekStart = getWeekStart(selectedDate, weekStartsOn);
     setWeekStart(newWeekStart);
-    setWeekDays(getWeekDays(newWeekStart));
+    setWeekDays(getWeekDaysDates(newWeekStart));
   }, [selectedDate, weekStartsOn]);
 
   const handlePrevWeek = () => {
@@ -34,12 +41,11 @@ export default function WeekView() {
   };
 
   const handleMonthClick = () => {
-    setCurrentView('month');
+    onMonthClick?.();
   };
 
   const handleDayClick = (date: Date) => {
-    setSelectedDate(date);
-    setCurrentView('day');
+    onDayClick?.(date);
   };
 
   // Format week range for display

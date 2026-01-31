@@ -88,7 +88,7 @@ export const getWeeklyMemo = async (weekStart: string): Promise<WeeklyMemo | nul
   return {
     id: data.id,
     user_id: data.user_id,
-    week_start: data.week_start,
+    weekStart: data.week_start,
     content: data.content,
     created_at: data.created_at,
     updated_at: data.updated_at

@@ -5,12 +5,12 @@ export interface Event {
   user_id?: string;
   title: string;
   date: string; // YYYY-MM-DD
-  start_time?: string; // HH:mm
-  end_time?: string; // HH:mm
+  startTime?: string; // HH:mm AM/PM format
+  endTime?: string; // HH:mm AM/PM format
   color: string;
   description?: string;
-  is_all_day?: boolean;
-  is_time_table?: boolean;
+  isAllDay?: boolean;
+  isTimeTable?: boolean;
   order?: number;
   recurring?: RecurringConfig;
   parent_recurring_id?: string;
@@ -41,7 +41,7 @@ export interface MonthlyMemo {
 export interface WeeklyMemo {
   id?: string;
   user_id?: string;
-  week_start: string; // YYYY-MM-DD
+  weekStart: string; // YYYY-MM-DD
   content: string;
   created_at?: string;
   updated_at?: string;
@@ -50,7 +50,7 @@ export interface WeeklyMemo {
 export interface WeeklyChecklistItem {
   id: string;
   user_id?: string;
-  week_start: string;
+  weekStart: string;
   content: string;
   completed: boolean;
   order: number;

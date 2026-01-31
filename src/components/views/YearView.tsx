@@ -1,13 +1,15 @@
 import { useApp } from '../../contexts/AppContext';
 
-export default function YearView() {
-  const { selectedDate, setSelectedDate, setCurrentView } = useApp();
+interface YearViewProps {
+  onMonthClick?: (year: number, month: number) => void;
+}
+
+export default function YearView({ onMonthClick }: YearViewProps) {
+  const { selectedDate } = useApp();
   const year = selectedDate.getFullYear();
 
   const handleMonthClick = (month: number) => {
-    const newDate = new Date(year, month, 1);
-    setSelectedDate(newDate);
-    setCurrentView('month');
+    onMonthClick?.(year, month);
   };
 
   const months = [

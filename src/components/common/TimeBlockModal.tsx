@@ -23,8 +23,8 @@ export default function TimeBlockModal({
 }: TimeBlockModalProps) {
   const [title, setTitle] = useState(block?.title || '');
   const [color, setColor] = useState(block?.color || EVENT_COLORS[0].value);
-  const [startTime, setStartTime] = useState(block?.start_time || initialStartTime || '09:00');
-  const [endTime, setEndTime] = useState(block?.end_time || initialEndTime || '10:00');
+  const [startTime, setStartTime] = useState(block?.startTime || initialStartTime || '09:00');
+  const [endTime, setEndTime] = useState(block?.endTime || initialEndTime || '10:00');
 
   if (!isOpen) return null;
 
