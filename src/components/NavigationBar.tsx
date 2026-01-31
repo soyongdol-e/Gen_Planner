@@ -40,7 +40,7 @@ export function NavigationBar({
         {prevLabel && (
           <button
             onClick={onPrevLabelClick}
-            className="text-xs md:text-sm text-gray-400 hover:text-gray-600 transition-colors px-1 md:px-2 hidden sm:block"
+            className="text-body-sm text-gray-400 hover:text-gray-600 transition-colors px-2 hidden sm:block"
           >
             {prevLabel}
           </button>
@@ -48,7 +48,7 @@ export function NavigationBar({
         
         <button
           onClick={onCurrentClick}
-          className="text-lg md:text-2xl font-bold px-2 md:px-4 hover:text-gray-700 transition-colors"
+          className="text-heading-lg px-4 hover:text-gray-700 transition-colors"
         >
           {currentLabel}
         </button>
@@ -56,7 +56,7 @@ export function NavigationBar({
         {nextLabel && (
           <button
             onClick={onNextLabelClick}
-            className="text-xs md:text-sm text-gray-400 hover:text-gray-600 transition-colors px-1 md:px-2 hidden sm:block"
+            className="text-body-sm text-gray-400 hover:text-gray-600 transition-colors px-2 hidden sm:block"
           >
             {nextLabel}
           </button>

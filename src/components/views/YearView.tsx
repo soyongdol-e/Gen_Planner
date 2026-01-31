@@ -91,7 +91,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
         onClick={() => onMonthClick?.(currentYear, month)}
         className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
       >
-        <h3 className="text-sm font-semibold mb-2 text-center">
+        <h3 className="text-body-md-bold mb-2 text-center">
           {getMonthName(month, 'ko-KR')}
         </h3>
         <div className="grid grid-cols-7 gap-0.5">
@@ -100,7 +100,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
             <div
               key={day}
               className={cn(
-                'text-[10px] text-center font-medium',
+                'text-body-xs text-center font-medium',
                 idx === 0 && 'text-red-500',
                 idx === 6 && 'text-blue-500'
               )}
@@ -118,7 +118,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
               <div
                 key={idx}
                 className={cn(
-                  'text-[10px] text-center py-0.5',
+                  'text-body-xs text-center py-0.5',
                   isToday && 'bg-teal-400 text-white rounded-full',
                   !isToday && day.isCurrentMonth && 'text-gray-900',
                   !isToday && !day.isCurrentMonth && 'text-gray-300',
@@ -151,18 +151,18 @@ export function YearView({ onMonthClick }: YearViewProps) {
         
         <button
           onClick={() => handleYearClick(prevYear)}
-          className="text-2xl text-gray-400 hover:text-gray-600 transition-colors px-4"
+          className="text-heading-md text-gray-400 hover:text-gray-600 transition-colors px-4"
         >
           {prevYear}
         </button>
         
-        <div className="text-5xl font-bold px-8">
+        <div className="text-display-md px-8">
           {currentYear}
         </div>
         
         <button
           onClick={() => handleYearClick(nextYear)}
-          className="text-2xl text-gray-400 hover:text-gray-600 transition-colors px-4"
+          className="text-heading-md text-gray-400 hover:text-gray-600 transition-colors px-4"
         >
           {nextYear}
         </button>
