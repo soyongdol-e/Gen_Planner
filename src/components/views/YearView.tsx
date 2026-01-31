@@ -102,12 +102,12 @@ export function YearView({ onMonthClick }: YearViewProps) {
         className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
       >
         {/* Month Title - 24px, Pretendard 700, #111111, Center aligned, No margin */}
-        <h3 className="text-[24px] font-bold leading-none text-center m-0 mb-3" style={{ color: '#111111' }}>
+        <h3 className="text-[24px] font-bold leading-none text-center m-0 mb-[20px]" style={{ color: '#111111' }}>
           {month + 1}월
         </h3>
         
         {/* Week day headers - 17px, Pretendard 500, tight line-height */}
-        <div className="grid grid-cols-7 gap-x-2 mb-2 mt-0">
+        <div className="grid grid-cols-7 gap-x-2 mb-1 mt-0">
           {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
             <div
               key={day}
