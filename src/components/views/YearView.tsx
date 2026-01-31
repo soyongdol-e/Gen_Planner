@@ -141,18 +141,18 @@ export function YearView({ onMonthClick }: YearViewProps) {
     <div className="h-screen flex flex-col bg-white">
       {/* Navigation */}
       <div className="flex items-center justify-center pt-[62px] pb-8">
-        {/* Left Arrow Icon */}
+        {/* Left Arrow Icon - Simple chevron without background */}
         <button
           onClick={handlePrevYear}
-          className="p-2 hover:bg-gray-50 rounded-full transition-colors"
+          className="hover:opacity-70 transition-opacity"
         >
-          <ChevronLeft className="size-8 text-gray-600" />
+          <ChevronLeft className="size-8" style={{ color: '#CCCCCC' }} />
         </button>
         
         {/* Previous Year - 40px gap from icon */}
         <button
           onClick={() => handleYearClick(prevYear)}
-          className="text-[36px] font-bold leading-[150%] transition-colors ml-10"
+          className="text-[36px] font-bold leading-[150%] hover:opacity-70 transition-opacity ml-10"
           style={{ color: '#E2E2E2' }}
         >
           {prevYear}
@@ -166,18 +166,18 @@ export function YearView({ onMonthClick }: YearViewProps) {
         {/* Next Year - 120px gap from current year */}
         <button
           onClick={() => handleYearClick(nextYear)}
-          className="text-[36px] font-bold leading-[150%] transition-colors"
+          className="text-[36px] font-bold leading-[150%] hover:opacity-70 transition-opacity"
           style={{ color: '#E2E2E2' }}
         >
           {nextYear}
         </button>
         
-        {/* Right Arrow Icon - 40px gap from next year */}
+        {/* Right Arrow Icon - Simple chevron without background, 40px gap from next year */}
         <button
           onClick={handleNextYear}
-          className="p-2 hover:bg-gray-50 rounded-full transition-colors ml-10"
+          className="hover:opacity-70 transition-opacity ml-10"
         >
-          <ChevronRight className="size-8 text-gray-600" />
+          <ChevronRight className="size-8" style={{ color: '#CCCCCC' }} />
         </button>
       </div>
       
