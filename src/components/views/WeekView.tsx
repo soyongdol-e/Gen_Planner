@@ -285,9 +285,9 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                     />
 
                     {/* Content (above the button) */}
-                    <div className="relative z-10">
+                    <div className="relative z-10 pointer-events-none">
                       {/* Daily Memo Area */}
-                      <div className="mb-3 min-h-[40px] text-xs text-gray-500 italic pointer-events-none">
+                      <div className="mb-3 min-h-[40px] text-xs text-gray-500 italic">
                         {/* Placeholder for daily memo */}
                       </div>
 
@@ -301,7 +301,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                             return (
                               <div
                                 key={event.id}
-                                className="rounded p-2 text-xs bg-white border-2 border-pink-500"
+                                className="rounded p-2 text-xs bg-white border-2 border-pink-500 pointer-events-auto"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {event.startTime && (
@@ -371,7 +371,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                                 setEditingEventId(event.id);
                                 setEditingEventTitle(event.title);
                               }}
-                              className="w-full text-left rounded p-2 text-xs hover:opacity-80 transition-opacity"
+                              className="w-full text-left rounded p-2 text-xs hover:opacity-80 transition-opacity pointer-events-auto"
                               style={{
                                 backgroundColor: eventColor,
                                 color: 'white',
@@ -397,7 +397,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                               e.stopPropagation();
                               setAddingEventDate(dayStr);
                             }}
-                            className="w-full p-2 border-2 border-dashed border-gray-300 rounded hover:border-pink-400 hover:bg-pink-50 transition-colors flex items-center justify-center gap-1 text-xs text-gray-500 hover:text-pink-600"
+                            className="w-full p-2 border-2 border-dashed border-gray-300 rounded hover:border-pink-400 hover:bg-pink-50 transition-colors flex items-center justify-center gap-1 text-xs text-gray-500 hover:text-pink-600 pointer-events-auto"
                           >
                             <Plus className="w-3 h-3" />
                             <span>이벤트 추가</span>
@@ -407,7 +407,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                         {/* Add Event Input */}
                         {addingEventDate === dayStr && (
                           <div
-                            className="rounded p-2 bg-white border-2 border-pink-500 shadow-sm"
+                            className="rounded p-2 bg-white border-2 border-pink-500 shadow-sm pointer-events-auto"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <input
@@ -447,7 +447,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                             return (
                               <div
                                 key={task.id}
-                                className="rounded p-2 text-xs bg-white border-2 border-green-500"
+                                className="rounded p-2 text-xs bg-white border-2 border-green-500 pointer-events-auto"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <div className="flex items-center gap-1 w-full">
@@ -520,7 +520,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                           return (
                             <div
                               key={task.id}
-                              className="rounded p-2 text-xs"
+                              className="rounded p-2 text-xs pointer-events-auto"
                               style={{
                                 backgroundColor: '#10b981',
                                 color: 'white',
