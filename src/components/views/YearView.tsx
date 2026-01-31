@@ -107,7 +107,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
         </h3>
         
         {/* Week day headers - 17px, Pretendard 500, tight line-height */}
-        <div className="grid grid-cols-7 gap-x-2 mb-1">
+        <div className="grid grid-cols-7 gap-x-2 mb-2">
           {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
             <div
               key={day}
@@ -124,10 +124,10 @@ export function YearView({ onMonthClick }: YearViewProps) {
         </div>
         
         {/* Divider Line - 2px thickness, rounded ends, #E2E2E2 */}
-        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[6px]" />
+        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[10px]" />
         
-        {/* Calendar days - 15px, Pretendard 600, 6px vertical gap between weeks */}
-        <div className="grid grid-cols-7 gap-x-2 gap-y-[6px]">
+        {/* Calendar days - 15px, Pretendard 600, 10px vertical gap between weeks */}
+        <div className="grid grid-cols-7 gap-x-2 gap-y-[10px]">
           {days.map((day, idx) => {
             const isToday = isSameDay(day.date, today);
             const hasEvents = getEventsForDate(day.date).length > 0;
@@ -221,7 +221,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
       {/* 12 Month Grid */}
       <div className="flex-1 overflow-auto px-[192px] py-8">
         <div className="max-w-[1920px] mx-auto">
-          <div className="grid grid-cols-4 gap-x-[44px] gap-y-[40px]">
+          <div className="grid grid-cols-4 gap-x-[44px] gap-y-[24px]">
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i}>
                 {renderMiniMonth(i)}
