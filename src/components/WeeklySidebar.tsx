@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import type { WeeklyChecklistItem } from '../types';
-import { getMonthName } from '../utils/dateUtils';
+import { getMonthName, formatDate } from '../utils/dateUtils';
+import { cn } from './ui/utils';
 
 interface WeeklySidebarProps {
   weekStart: Date;
@@ -23,10 +24,12 @@ export function WeeklySidebar({
   onChecklistAdd,
   onChecklistDelete,
   onMonthClick,
+  onWeekClick,
 }: WeeklySidebarProps) {
   const [isMonthlyMemoExpanded, setIsMonthlyMemoExpanded] = useState(true);
   const [newChecklistItem, setNewChecklistItem] = useState('');
   const [isAddingItem, setIsAddingItem] = useState(false);
+  const [miniCalendarDate, setMiniCalendarDate] = useState(weekStart);
 
   const year = weekStart.getFullYear();
   const month = weekStart.getMonth();
@@ -39,8 +42,118 @@ export function WeeklySidebar({
     }
   };
 
+  // Mini Calendar functions
+  const getDaysInMonth = (year: number, month: number) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (year: number, month: number) => {
+    return new Date(year, month, 1).getDay();
+  };
+
+  const miniYear = miniCalendarDate.getFullYear();
+  const miniMonth = miniCalendarDate.getMonth();
+  const firstDay = getFirstDayOfMonth(miniYear, miniMonth);
+  const daysInMonth = getDaysInMonth(miniYear, miniMonth);
+  const daysInPrevMonth = miniMonth === 0 ? getDaysInMonth(miniYear - 1, 11) : getDaysInMonth(miniYear, miniMonth - 1);
+
+  const miniDays: { date: Date; isCurrentMonth: boolean }[] = [];
+
+  // Previous month days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const prevMonth = miniMonth === 0 ? 11 : miniMonth - 1;
+    const prevYear = miniMonth === 0 ? miniYear - 1 : miniYear;
+    miniDays.push({
+      date: new Date(prevYear, prevMonth, daysInPrevMonth - i),
+      isCurrentMonth: false,
+    });
+  }
+
+  // Current month days
+  for (let i = 1; i <= daysInMonth; i++) {
+    miniDays.push({
+      date: new Date(miniYear, miniMonth, i),
+      isCurrentMonth: true,
+    });
+  }
+
+  // Next month days
+  const remainingDays = 35 - miniDays.length;
+  for (let i = 1; i <= remainingDays; i++) {
+    const nextMonth = miniMonth === 11 ? 0 : miniMonth + 1;
+    const nextYear = miniMonth === 11 ? miniYear + 1 : miniYear;
+    miniDays.push({
+      date: new Date(nextYear, nextMonth, i),
+      isCurrentMonth: false,
+    });
+  }
+
+  const handleMiniPrevMonth = () => {
+    setMiniCalendarDate(new Date(miniYear, miniMonth - 1, 1));
+  };
+
+  const handleMiniNextMonth = () => {
+    setMiniCalendarDate(new Date(miniYear, miniMonth + 1, 1));
+  };
+
+  const isWeekStartDate = (date: Date) => {
+    return formatDate(date) === formatDate(weekStart);
+  };
+
   return (
-    <div className="w-80 border-r bg-gray-50 p-4 flex flex-col gap-4 overflow-y-auto md:block hidden">
+    <div className="w-80 border-r bg-gray-50 p-4 flex flex-col gap-4 overflow-y-auto">
+      {/* Mini Calendar */}
+      <div className="bg-white rounded-lg p-3 shadow-sm">
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={handleMiniPrevMonth}
+            className="p-1 hover:bg-gray-100 rounded"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <div className="text-sm font-semibold">
+            {miniYear}년 {getMonthName(miniMonth)}
+          </div>
+          <button
+            onClick={handleMiniNextMonth}
+            className="p-1 hover:bg-gray-100 rounded"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
+            <div
+              key={day}
+              className={cn(
+                'text-xs text-center font-medium',
+                idx === 0 && 'text-red-500',
+                idx === 6 && 'text-blue-500'
+              )}
+            >
+              {day}
+            </div>
+          ))}
+
+          {miniDays.map((day, idx) => (
+            <button
+              key={idx}
+              onClick={() => onWeekClick?.(day.date)}
+              className={cn(
+                'text-xs text-center py-1 rounded hover:bg-gray-100',
+                isWeekStartDate(day.date) && 'bg-teal-500 text-white hover:bg-teal-600',
+                !day.isCurrentMonth && 'text-gray-300',
+                day.isCurrentMonth && !isWeekStartDate(day.date) && idx % 7 === 0 && 'text-red-500',
+                day.isCurrentMonth && !isWeekStartDate(day.date) && idx % 7 === 6 && 'text-blue-500'
+              )}
+            >
+              {day.date.getDate()}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Monthly Memo */}
       <div className="bg-white rounded-lg p-4 shadow-sm">
         <button
