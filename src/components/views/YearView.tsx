@@ -141,44 +141,52 @@ export function YearView({ onMonthClick }: YearViewProps) {
     <div className="h-screen flex flex-col bg-white">
       {/* Navigation */}
       <div className="flex items-center justify-center pt-[62px] pb-8">
-        {/* Left Arrow Icon - Simple chevron without background */}
-        <button
-          onClick={handlePrevYear}
-          className="hover:opacity-70 transition-opacity"
-        >
-          <ChevronLeft className="size-8" style={{ color: '#CCCCCC' }} />
-        </button>
-        
-        {/* Previous Year - 40px gap from icon */}
-        <button
-          onClick={() => handleYearClick(prevYear)}
-          className="text-[36px] font-bold leading-[150%] hover:opacity-70 transition-opacity ml-10"
-          style={{ color: '#E2E2E2' }}
-        >
-          {prevYear}
-        </button>
+        {/* Left Navigation Group - Arrow + Previous Year */}
+        <div className="flex items-center group cursor-pointer" onClick={handlePrevYear}>
+          {/* Left Arrow Icon */}
+          <ChevronLeft 
+            className="size-8 transition-colors group-hover:text-[#505050]" 
+            style={{ color: '#999999' }} 
+          />
+          
+          {/* Previous Year - 40px gap from icon */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleYearClick(prevYear);
+            }}
+            className="text-[36px] font-bold leading-[150%] transition-colors ml-10 group-hover:text-[#505050]"
+            style={{ color: '#E2E2E2' }}
+          >
+            {prevYear}
+          </button>
+        </div>
         
         {/* Current Year - 120px gap from previous year */}
         <div className="text-[60px] font-bold leading-[150%] mx-[120px]">
           {currentYear}
         </div>
         
-        {/* Next Year - 120px gap from current year */}
-        <button
-          onClick={() => handleYearClick(nextYear)}
-          className="text-[36px] font-bold leading-[150%] hover:opacity-70 transition-opacity"
-          style={{ color: '#E2E2E2' }}
-        >
-          {nextYear}
-        </button>
-        
-        {/* Right Arrow Icon - Simple chevron without background, 40px gap from next year */}
-        <button
-          onClick={handleNextYear}
-          className="hover:opacity-70 transition-opacity ml-10"
-        >
-          <ChevronRight className="size-8" style={{ color: '#CCCCCC' }} />
-        </button>
+        {/* Right Navigation Group - Next Year + Arrow */}
+        <div className="flex items-center group cursor-pointer" onClick={handleNextYear}>
+          {/* Next Year */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleYearClick(nextYear);
+            }}
+            className="text-[36px] font-bold leading-[150%] transition-colors group-hover:text-[#505050]"
+            style={{ color: '#E2E2E2' }}
+          >
+            {nextYear}
+          </button>
+          
+          {/* Right Arrow Icon - 40px gap from next year */}
+          <ChevronRight 
+            className="size-8 transition-colors ml-10 group-hover:text-[#505050]" 
+            style={{ color: '#999999' }} 
+          />
+        </div>
       </div>
       
       {/* 12 Month Grid */}
