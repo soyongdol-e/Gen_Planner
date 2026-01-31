@@ -46,13 +46,13 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: TaskIte
           onChange={(e) => setEditContent(e.target.value)}
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
-          className="flex-1 px-2 py-1 text-sm border border-blue-500 rounded focus:outline-none"
+          className="flex-1 px-2 py-1 text-body-sm border border-blue-500 rounded focus:outline-none"
           autoFocus
         />
       ) : (
         <span
           onClick={() => setIsEditing(true)}
-          className={`flex-1 text-sm cursor-pointer ${
+          className={`flex-1 text-body-sm cursor-pointer ${
             task.completed ? 'line-through text-gray-400' : 'text-gray-700'
           }`}
         >
@@ -63,7 +63,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }: TaskIte
       {/* Delete Button */}
       <button
         onClick={() => onDelete(task.id)}
-        className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 text-sm"
+        className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 text-body-sm"
       >
         ✕
       </button>

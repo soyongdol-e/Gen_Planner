@@ -122,7 +122,7 @@ export function DailySidebar({
         {/* Mini Calendar */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">
+            <h3 className="text-body-sm-bold">
               {year}년 {getMonthName(month)}
             </h3>
             <Button
@@ -158,7 +158,7 @@ export function DailySidebar({
                   <div
                     key={day}
                     className={cn(
-                      'text-xs text-center font-medium',
+                      'text-body-xs text-center font-medium',
                       idx === 0 && 'text-red-500',
                       idx === 6 && 'text-blue-500'
                     )}
@@ -172,7 +172,7 @@ export function DailySidebar({
                     key={idx}
                     onClick={() => onDateClick(day.date)}
                     className={cn(
-                      'text-xs text-center py-1 rounded hover:bg-gray-100',
+                      'text-body-xs text-center py-1 rounded hover:bg-gray-100',
                       isSelectedDate(day.date) && 'bg-teal-500 text-white hover:bg-teal-600',
                       !isSelectedDate(day.date) && isToday(day.date) && 'bg-teal-100',
                       !day.isCurrentMonth && 'text-gray-300',
@@ -190,35 +190,35 @@ export function DailySidebar({
 
         {/* Monthly Memo */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Monthly Memo</h3>
+          <h3 className="text-body-sm-bold">Monthly Memo</h3>
           <Textarea
             value={monthlyMemo}
             readOnly
             placeholder="월 메모 없음"
-            className="text-xs resize-none min-h-[80px] bg-gray-50"
+            className="text-body-xs resize-none min-h-[80px] bg-gray-50"
           />
         </div>
 
         {/* Weekly Memo */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Weekly Memo</h3>
+          <h3 className="text-body-sm-bold">Weekly Memo</h3>
           <Textarea
             value={weeklyMemo}
             readOnly
             placeholder="주 메모 없음"
-            className="text-xs resize-none min-h-[80px] bg-gray-50"
+            className="text-body-xs resize-none min-h-[80px] bg-gray-50"
           />
         </div>
 
         {/* Weekly Checklist */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Weekly Checklist</h3>
+          <h3 className="text-body-sm-bold">Weekly Checklist</h3>
           <div className="space-y-1">
             {checklistItems.length === 0 ? (
-              <p className="text-xs text-gray-400">체크리스트 없음</p>
+              <p className="text-body-xs text-gray-400">체크리스트 없음</p>
             ) : (
               checklistItems.map((item) => (
-                <div key={item.id} className="flex items-start gap-2 text-xs">
+                <div key={item.id} className="flex items-start gap-2 text-body-xs">
                   <input
                     type="checkbox"
                     checked={item.completed}

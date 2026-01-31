@@ -31,16 +31,16 @@ export function EditEventsDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => onOpenChange(false)}>
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-xl font-bold mb-4">이벤트 편집</h2>
-        <p className="text-sm text-gray-500 mb-4">날짜: {dateStr}</p>
+        <h2 className="text-heading-md mb-4">이벤트 편집</h2>
+        <p className="text-body-sm text-gray-500 mb-4">날짜: {dateStr}</p>
         
         <div className="space-y-2 mb-4">
           {dateEvents.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">이벤트가 없습니다</p>
+            <p className="text-body-sm text-gray-400 text-center py-4">이벤트가 없습니다</p>
           ) : (
             dateEvents.map(event => (
               <div key={event.id} className="flex items-center justify-between p-2 border rounded">
-                <span className="text-sm">{event.title}</span>
+                <span className="text-body-sm">{event.title}</span>
                 <button
                   onClick={() => onEventDelete(event.id)}
                   className="text-red-500 hover:text-red-700"

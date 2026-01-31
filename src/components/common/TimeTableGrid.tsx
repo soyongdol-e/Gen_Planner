@@ -105,7 +105,7 @@ export default function TimeTableGrid({
         {hourLabels.map((label, index) => (
           <div
             key={index}
-            className="text-xs text-gray-500 text-right pr-2"
+            className="text-body-xs text-gray-500 text-right pr-2"
             style={{ height: config.cellHeight * config.cellsPerHour }}
           >
             {label}
@@ -169,10 +169,10 @@ export default function TimeTableGrid({
                 onClick={() => onBlockClick(block)}
                 onMouseDown={(e) => handleBlockMouseDown(e, block.id)}
               >
-                <div className="text-xs text-white font-medium truncate">
+                <div className="text-body-xs text-white font-medium truncate">
                   {formatTimeDisplay(block.startTime)} - {formatTimeDisplay(block.endTime)}
                 </div>
-                <div className="text-xs text-white truncate">
+                <div className="text-body-xs text-white truncate">
                   {block.title}
                 </div>
               </div>

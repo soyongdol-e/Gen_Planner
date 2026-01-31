@@ -183,7 +183,7 @@ export function MonthView({ initialDate, onYearClick, onWeekClick, onDayClick }:
         leftContent={
           <button
             onClick={onYearClick}
-            className="text-lg md:text-xl font-semibold hover:text-gray-700 transition-colors"
+            className="text-heading-sm md:text-heading-md hover:text-gray-700 transition-colors"
           >
             {year}년
           </button>

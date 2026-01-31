@@ -52,13 +52,13 @@ export default function TimeBlockModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-        <h2 className="text-xl font-semibold mb-4">
+        <h2 className="text-heading-md mb-4">
           {block ? 'Edit Time Block' : 'Add Time Block'}
         </h2>
 
         {/* Title */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-body-sm font-medium text-gray-700 mb-1">
             Title *
           </label>
           <input
@@ -74,7 +74,7 @@ export default function TimeBlockModal({
         {/* Time Range */}
         <div className="mb-4 grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-body-sm font-medium text-gray-700 mb-1">
               Start Time
             </label>
             <input
@@ -85,7 +85,7 @@ export default function TimeBlockModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-body-sm font-medium text-gray-700 mb-1">
               End Time
             </label>
             <input
@@ -99,7 +99,7 @@ export default function TimeBlockModal({
 
         {/* Color */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-gray-700 mb-2">
             Color
           </label>
           <div className="flex flex-wrap gap-2">

@@ -22,9 +22,9 @@ export function Button({
   };
   
   const sizeClasses = {
-    default: 'h-10 px-4 py-2 text-sm',
-    sm: 'h-8 px-3 text-xs',
-    lg: 'h-12 px-6 text-base',
+    default: 'h-10 px-4 py-2 text-body-sm',
+    sm: 'h-8 px-3 text-body-xs',
+    lg: 'h-12 px-6 text-body-md',
     icon: 'h-10 w-10',
   };
   

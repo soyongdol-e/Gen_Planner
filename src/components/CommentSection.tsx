@@ -126,7 +126,7 @@ export function CommentSection({
         {/* Empty State */}
         {elements.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-sm text-gray-400">텍스트나 이미지를 추가하세요</p>
+            <p className="text-body-sm text-gray-400">텍스트나 이미지를 추가하세요</p>
           </div>
         )}
       </div>
@@ -141,7 +141,7 @@ export function CommentSection({
               onElementUpdate(selectedElement.id, { content: e.target.value })
             }
             placeholder="텍스트 내용"
-            className="w-full px-3 py-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-3 py-2 text-body-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
           <div className="flex gap-2">
             <input
@@ -150,7 +150,7 @@ export function CommentSection({
               onChange={(e) =>
                 onElementUpdate(selectedElement.id, { font_size: Number(e.target.value) })
               }
-              className="w-20 px-3 py-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-20 px-3 py-2 text-body-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
             <input
               type="color"

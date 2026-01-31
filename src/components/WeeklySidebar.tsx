@@ -111,7 +111,7 @@ export function WeeklySidebar({
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <div className="text-sm font-semibold">
+          <div className="text-body-sm-bold">
             {miniYear}년 {getMonthName(miniMonth)}
           </div>
           <button
@@ -127,7 +127,7 @@ export function WeeklySidebar({
             <div
               key={day}
               className={cn(
-                'text-xs text-center font-medium',
+                'text-body-xs text-center font-medium',
                 idx === 0 && 'text-red-500',
                 idx === 6 && 'text-blue-500'
               )}
@@ -145,7 +145,7 @@ export function WeeklySidebar({
                 onWeekClick?.(weekStartDate);
               }}
               className={cn(
-                'text-xs text-center py-1 rounded hover:bg-gray-100',
+                'text-body-xs text-center py-1 rounded hover:bg-gray-100',
                 isWeekStartDate(day.date) && 'bg-teal-500 text-white hover:bg-teal-600',
                 !day.isCurrentMonth && 'text-gray-300',
                 day.isCurrentMonth && !isWeekStartDate(day.date) && idx % 7 === 0 && 'text-red-500',
@@ -169,7 +169,7 @@ export function WeeklySidebar({
               e.stopPropagation();
               onMonthClick?.();
             }}
-            className="font-semibold text-lg text-blue-600 hover:underline"
+            className="text-heading-sm text-blue-600 hover:underline"
           >
             {year}년 {getMonthName(month)}
           </button>
@@ -181,7 +181,7 @@ export function WeeklySidebar({
         </button>
 
         {isMonthlyMemoExpanded && (
-          <div className="text-sm text-gray-600 whitespace-pre-wrap">
+          <div className="text-body-sm text-gray-600 whitespace-pre-wrap">
             {monthlyMemo || '월별 메모가 없습니다'}
           </div>
         )}
@@ -189,7 +189,7 @@ export function WeeklySidebar({
 
       {/* Weekly Checklist */}
       <div className="bg-white rounded-lg p-4 shadow-sm flex-1">
-        <h3 className="font-semibold text-lg mb-3">Weekly Checklist</h3>
+        <h3 className="text-heading-sm mb-3">Weekly Checklist</h3>
 
         <div className="space-y-2">
           {checklistItems.map((item) => (
@@ -202,7 +202,7 @@ export function WeeklySidebar({
               />
               <div className="flex-1 min-w-0">
                 <span
-                  className={`text-sm ${item.completed ? 'line-through text-gray-400' : 'text-gray-900'}`}
+                  className={`text-body-sm ${item.completed ? 'line-through text-gray-400' : 'text-gray-900'}`}
                 >
                   {item.content}
                 </span>
@@ -231,7 +231,7 @@ export function WeeklySidebar({
                   }
                 }}
                 placeholder="체크리스트 항목..."
-                className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-2 py-1 text-body-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 autoFocus
               />
               <Button size="sm" onClick={handleAddItem}>
@@ -241,7 +241,7 @@ export function WeeklySidebar({
           ) : (
             <button
               onClick={() => setIsAddingItem(true)}
-              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2"
+              className="flex items-center gap-1 text-body-sm text-blue-600 hover:text-blue-700 mt-2"
             >
               <Plus className="w-4 h-4" />
               <span>항목 추가</span>

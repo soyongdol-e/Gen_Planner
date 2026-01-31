@@ -32,13 +32,13 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-        <h2 className="text-xl font-semibold mb-4">
+        <h2 className="text-heading-md mb-4">
           {event ? 'Edit Event' : 'Add Event'}
         </h2>
 
         {/* Title */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-body-sm font-medium text-gray-700 mb-1">
             Title *
           </label>
           <input
@@ -53,7 +53,7 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
 
         {/* Color */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-gray-700 mb-2">
             Color
           </label>
           <div className="flex flex-wrap gap-2">
@@ -73,7 +73,7 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
 
         {/* Description */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-body-sm font-medium text-gray-700 mb-1">
             Description
           </label>
           <textarea

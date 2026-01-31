@@ -19,12 +19,12 @@ export default function EventItem({ event, onEdit, onDelete }: EventItemProps) {
       <div className="flex-1 min-w-0">
         <div
           onClick={() => onEdit(event)}
-          className="text-sm text-gray-700 cursor-pointer hover:text-gray-900"
+          className="text-body-sm text-gray-700 cursor-pointer hover:text-gray-900"
         >
           {event.title}
         </div>
         {event.description && (
-          <div className="text-xs text-gray-400 truncate">
+          <div className="text-body-xs text-gray-400 truncate">
             {event.description}
           </div>
         )}
@@ -33,7 +33,7 @@ export default function EventItem({ event, onEdit, onDelete }: EventItemProps) {
       {/* Delete Button */}
       <button
         onClick={() => onDelete(event.id)}
-        className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 text-sm flex-shrink-0"
+        className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 text-body-sm flex-shrink-0"
       >
         ✕
       </button>

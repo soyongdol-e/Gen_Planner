@@ -65,7 +65,7 @@ export function MonthCalendar({
             <div
               key={day}
               className={cn(
-                'text-center py-2 md:py-3 font-semibold text-xs md:text-sm',
+                'text-center py-2 md:py-3 text-body-xs md:text-body-sm',
                 index === 0 && 'text-red-500', // Sunday
                 index === 6 && 'text-blue-500' // Saturday
               )}
@@ -145,7 +145,7 @@ export function MonthCalendar({
                     {/* Date Number */}
                     <div
                       className={cn(
-                        'w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-full text-xs md:text-sm font-medium',
+                        'w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-full text-body-xs md:text-body-sm font-medium',
                         isToday && 'bg-teal-400 text-white',
                         !isToday && day.isCurrentMonth && 'text-gray-900',
                         !isToday && !day.isCurrentMonth && 'text-gray-400',

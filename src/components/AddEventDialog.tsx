@@ -24,8 +24,8 @@ export function AddEventDialog({ open, onOpenChange, date, onSave }: AddEventDia
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => onOpenChange(false)}>
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-xl font-bold mb-4">이벤트 추가</h2>
-        <p className="text-sm text-gray-500 mb-4">날짜: {formatDate(date)}</p>
+        <h2 className="text-heading-md mb-4">이벤트 추가</h2>
+        <p className="text-body-sm text-gray-500 mb-4">날짜: {formatDate(date)}</p>
         
         <form onSubmit={handleSubmit}>
           <input

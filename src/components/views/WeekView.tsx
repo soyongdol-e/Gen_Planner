@@ -228,7 +228,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                   >
                     <div
                       className={cn(
-                        'text-xs font-medium',
+                        'text-body-xs font-medium',
                         dayOfWeek === 0 && 'text-red-500',
                         dayOfWeek === 6 && 'text-blue-500',
                         dayOfWeek > 0 && dayOfWeek < 6 && 'text-gray-600'
@@ -238,7 +238,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                     </div>
                     <div
                       className={cn(
-                        'text-lg font-semibold mt-1',
+                        'text-heading-sm mt-1',
                         isToday && 'text-teal-600',
                         !isToday && dayOfWeek === 0 && 'text-red-500',
                         !isToday && dayOfWeek === 6 && 'text-blue-500'
@@ -287,7 +287,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                     {/* Content (above the button) */}
                     <div className="relative z-10 pointer-events-none">
                       {/* Daily Memo Area */}
-                      <div className="mb-3 min-h-[40px] text-xs text-gray-500 italic">
+                      <div className="mb-3 min-h-[40px] text-body-xs text-gray-500 italic">
                         {/* Placeholder for daily memo */}
                       </div>
 
@@ -301,7 +301,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                             return (
                               <div
                                 key={event.id}
-                                className="rounded p-2 text-xs bg-white border-2 border-pink-500 pointer-events-auto"
+                                className="rounded p-2 text-body-xs bg-white border-2 border-pink-500 pointer-events-auto"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {event.startTime && (
@@ -340,7 +340,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                                       }
                                     }}
                                     autoFocus
-                                    className="flex-1 min-w-0 px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                    className="flex-1 min-w-0 px-2 py-1 text-body-xs border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
                                   />
                                   <button
                                     onMouseDown={(e) => {
@@ -371,7 +371,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                                 setEditingEventId(event.id);
                                 setEditingEventTitle(event.title);
                               }}
-                              className="w-full text-left rounded p-2 text-xs hover:opacity-80 transition-opacity pointer-events-auto"
+                              className="w-full text-left rounded p-2 text-body-xs hover:opacity-80 transition-opacity pointer-events-auto"
                               style={{
                                 backgroundColor: eventColor,
                                 color: 'white',
@@ -397,7 +397,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                               e.stopPropagation();
                               setAddingEventDate(dayStr);
                             }}
-                            className="w-full p-2 border-2 border-dashed border-gray-300 rounded hover:border-pink-400 hover:bg-pink-50 transition-colors flex items-center justify-center gap-1 text-xs text-gray-500 hover:text-pink-600 pointer-events-auto"
+                            className="w-full p-2 border-2 border-dashed border-gray-300 rounded hover:border-pink-400 hover:bg-pink-50 transition-colors flex items-center justify-center gap-1 text-body-xs text-gray-500 hover:text-pink-600 pointer-events-auto"
                           >
                             <Plus className="w-3 h-3" />
                             <span>이벤트 추가</span>
@@ -432,7 +432,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                               }}
                               placeholder="이벤트 제목..."
                               autoFocus
-                              className="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
+                              className="w-full px-2 py-1 text-body-xs border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
                             />
                           </div>
                         )}
@@ -447,7 +447,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                             return (
                               <div
                                 key={task.id}
-                                className="rounded p-2 text-xs bg-white border-2 border-green-500 pointer-events-auto"
+                                className="rounded p-2 text-body-xs bg-white border-2 border-green-500 pointer-events-auto"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <div className="flex items-center gap-1 w-full">
@@ -494,7 +494,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                                       }
                                     }}
                                     autoFocus
-                                    className="flex-1 min-w-0 px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    className="flex-1 min-w-0 px-2 py-1 text-body-xs border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                                   />
                                   <button
                                     onMouseDown={(e) => {
@@ -520,7 +520,7 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                           return (
                             <div
                               key={task.id}
-                              className="rounded p-2 text-xs pointer-events-auto"
+                              className="rounded p-2 text-body-xs pointer-events-auto"
                               style={{
                                 backgroundColor: '#10b981',
                                 color: 'white',
@@ -568,12 +568,12 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
 
           {/* Weekly Memo - Below Week Calendar */}
           <div className="bg-white rounded-lg shadow-sm p-4">
-            <h3 className="font-semibold text-sm mb-3">Weekly Memo</h3>
+            <h3 className="text-body-sm-bold mb-3">Weekly Memo</h3>
             <Textarea
               value={weeklyMemo}
               onChange={(e) => setWeeklyMemo(e.target.value)}
               placeholder="이번 주 메모를 작성하세요..."
-              className="text-sm min-h-[120px] resize-none"
+              className="text-body-sm min-h-[120px] resize-none"
             />
           </div>
         </div>

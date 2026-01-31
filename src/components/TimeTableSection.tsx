@@ -209,7 +209,7 @@ export function TimeTableSection({
   return (
     <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
       <div className="flex items-center justify-between p-3 border-b">
-        <h2 className="text-base font-semibold">Time Table</h2>
+        <h2 className="text-body-md">Time Table</h2>
         <div className="flex gap-1">
           {COLORS.map((color) => (
             <button

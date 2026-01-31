@@ -46,7 +46,7 @@ export function TaskSection({ tasks, onTaskToggle, onTaskAdd, onTaskDelete }: Ta
             <div key={hour} className="border-b last:border-b-0">
               {/* Hour Header */}
               <div className="flex items-center justify-between p-2 bg-gray-50">
-                <span className="text-xs font-medium text-gray-600">
+                <span className="text-body-xs font-medium text-gray-600">
                   {hour.toString().padStart(2, '0')}:00
                 </span>
                 <button
@@ -72,7 +72,7 @@ export function TaskSection({ tasks, onTaskToggle, onTaskAdd, onTaskDelete }: Ta
                     />
                     <span
                       className={cn(
-                        'flex-1 text-sm',
+                        'flex-1 text-body-sm',
                         task.completed && 'line-through text-gray-400'
                       )}
                     >
@@ -111,7 +111,7 @@ export function TaskSection({ tasks, onTaskToggle, onTaskAdd, onTaskDelete }: Ta
                       }}
                       placeholder="새 작업..."
                       autoFocus
-                      className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="flex-1 px-2 py-1 text-body-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                 )}

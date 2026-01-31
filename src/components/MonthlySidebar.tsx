@@ -111,7 +111,7 @@ export function MonthlySidebar({
           onClick={() => setIsMemoExpanded(!isMemoExpanded)}
           className="flex items-center justify-between w-full mb-2"
         >
-          <h3 className="font-semibold text-lg">Monthly Memo</h3>
+          <h3 className="text-heading-sm">Monthly Memo</h3>
           {isMemoExpanded ? (
             <ChevronUp className="size-5 text-gray-500" />
           ) : (
@@ -132,11 +132,11 @@ export function MonthlySidebar({
       {/* Events List */}
       <div className="bg-white rounded-lg p-4 shadow-sm flex-1">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-lg">일정 목록</h3>
+          <h3 className="text-heading-sm">일정 목록</h3>
           {pastEvents.length > 0 && (
             <button
               onClick={() => setShowPastEvents(!showPastEvents)}
-              className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-body-xs text-gray-500 hover:text-gray-700 transition-colors"
             >
               {showPastEvents ? '지난 일정 숨기기' : '지난 일정보기'}
             </button>
@@ -144,7 +144,7 @@ export function MonthlySidebar({
         </div>
         <div className="space-y-2">
           {groupedByDate.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">
+            <p className="text-body-sm text-gray-400 text-center py-4">
               일정이 없습니다
             </p>
           ) : (
@@ -152,7 +152,7 @@ export function MonthlySidebar({
               return (
                 <div key={group.date} className="space-y-1 pb-3 border-b last:border-b-0">
                   {/* Date Header */}
-                  <div className="text-sm font-semibold text-gray-700 mb-2">
+                  <div className="text-body-sm-bold text-gray-700 mb-2">
                     {group.displayDate}
                   </div>
                   
@@ -168,9 +168,9 @@ export function MonthlySidebar({
                           className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 bg-pink-500"
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm text-gray-900">{event.title}</div>
+                          <div className="text-body-sm text-gray-900">{event.title}</div>
                           {event.startTime && (
-                            <div className="text-xs text-gray-400 mt-0.5">
+                            <div className="text-body-xs text-gray-400 mt-0.5">
                               {event.startTime}
                               {event.endTime && ` - ${event.endTime}`}
                             </div>
@@ -188,7 +188,7 @@ export function MonthlySidebar({
                           className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 bg-green-500"
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm text-gray-900">{task.content}</div>
+                          <div className="text-body-sm text-gray-900">{task.content}</div>
                         </div>
                       </div>
                     );

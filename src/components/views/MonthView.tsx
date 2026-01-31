@@ -116,7 +116,7 @@ export default function MonthView() {
             </button>
             <div className="flex items-center gap-2">
               <span className="text-gray-400">{month - 1}월</span>
-              <span className="text-2xl font-bold">{month}월</span>
+              <span className="text-heading-lg">{month}월</span>
               <span className="text-gray-400">{month + 1}월</span>
             </div>
             <button 
@@ -129,15 +129,15 @@ export default function MonthView() {
 
           {/* Quick Actions */}
           <div className="flex gap-2">
-            <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
+            <button className="px-3 py-1 text-body-sm border border-gray-300 rounded hover:bg-gray-50">
               년보기
             </button>
-            <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
+            <button className="px-3 py-1 text-body-sm border border-gray-300 rounded hover:bg-gray-50">
               주보기
             </button>
             <button 
               onClick={handleTodayClick}
-              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50"
+              className="px-3 py-1 text-body-sm border border-gray-300 rounded hover:bg-gray-50"
             >
               오늘
             </button>
@@ -154,7 +154,7 @@ export default function MonthView() {
               <h3 className="font-semibold">Monthly Memo</h3>
               <button 
                 onClick={() => setMemoCollapsed(!memoCollapsed)}
-                className="text-sm text-gray-400 hover:text-gray-600"
+                className="text-body-sm text-gray-400 hover:text-gray-600"
               >
                 {memoCollapsed ? '∧' : '∨'}
               </button>
@@ -163,7 +163,7 @@ export default function MonthView() {
               <textarea 
                 value={memoContent}
                 onChange={(e) => setMemoContent(e.target.value)}
-                className="w-full h-32 p-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full h-32 p-2 text-body-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="이번 달 메모..."
               />
             )}
@@ -172,13 +172,13 @@ export default function MonthView() {
           <div>
             <h3 className="font-semibold mb-2">일정 목록</h3>
             {events.length === 0 ? (
-              <div className="text-sm text-gray-500">
+              <div className="text-body-sm text-gray-500">
                 일정이 없습니다
               </div>
             ) : (
               <div className="space-y-1">
                 {events.slice(0, 10).map(event => (
-                  <div key={event.id} className="text-sm flex items-center gap-2">
+                  <div key={event.id} className="text-body-sm flex items-center gap-2">
                     <div 
                       className="w-2 h-2 rounded-full flex-shrink-0"
                       style={{ backgroundColor: event.color }}
@@ -189,7 +189,7 @@ export default function MonthView() {
                   </div>
                 ))}
                 {events.length > 10 && (
-                  <div className="text-xs text-gray-400">
+                  <div className="text-body-xs text-gray-400">
                     +{events.length - 10}개 더보기
                   </div>
                 )}
@@ -204,13 +204,13 @@ export default function MonthView() {
             {/* Weekday Header */}
             <div className="grid grid-cols-8 border-b border-gray-200">
               {/* Week number column header */}
-              <div className="p-3 text-center font-semibold text-gray-400 text-xs">
+              <div className="p-3 text-center text-gray-400 text-body-xs">
                 주
               </div>
               {WEEKDAYS.map((day, index) => (
                 <div 
                   key={day}
-                  className={`p-3 text-center font-semibold ${
+                  className={`p-3 text-center ${
                     index === 0 ? 'text-red-500' : 
                     index === 6 ? 'text-blue-500' : 
                     'text-gray-700'
@@ -230,7 +230,7 @@ export default function MonthView() {
                     onClick={() => handleWeekClick(week[0])}
                     className="border-b border-r border-gray-200 p-2 flex items-center justify-center cursor-pointer hover:bg-blue-50 group"
                   >
-                    <button className="text-xs text-gray-400 group-hover:text-blue-600 font-medium">
+                    <button className="text-body-xs text-gray-400 group-hover:text-blue-600 font-medium">
                       주보기
                     </button>
                   </div>
@@ -249,7 +249,7 @@ export default function MonthView() {
                         className="border-b border-r border-gray-200 min-h-[100px] p-2 cursor-pointer hover:bg-gray-50"
                         onClick={() => handleDateClick(date)}
                         >
-                        <div className={`text-sm mb-1 ${
+                        <div className={`text-body-sm mb-1 ${
                           !inMonth ? 'text-gray-300' : 
                           today ? 'bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center' :
                           dayIndex === 0 ? 'text-red-500' :
@@ -271,7 +271,7 @@ export default function MonthView() {
                               />
                             ))}
                             {allDayEvents.length > 3 && (
-                              <span className="text-xs text-gray-400">
+                              <span className="text-body-xs text-gray-400">
                                 +{allDayEvents.length - 3}
                               </span>
                             )}

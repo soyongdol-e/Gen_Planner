@@ -90,7 +90,7 @@ function DraggableEventItem({ event, index, onEventDelete, moveEvent }: Draggabl
       </div>
       
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-sm">{event.title}</div>
+        <div className="font-medium text-body-sm">{event.title}</div>
       </div>
       
       {onEventDelete && (
@@ -122,11 +122,11 @@ export function EventSection({ events, onEventDelete, onEventReorder }: EventSec
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="bg-white rounded-lg shadow-sm p-4 h-full flex flex-col">
-        <h2 className="text-lg font-semibold mb-4">Event</h2>
+        <h2 className="text-heading-sm mb-4">Event</h2>
         
         <div className="flex-1 overflow-auto space-y-2">
           {allDayEvents.length === 0 ? (
-            <p className="text-gray-400 text-sm">이벤트가 없습니다</p>
+            <p className="text-gray-400 text-body-sm">이벤트가 없습니다</p>
           ) : (
             allDayEvents.map((event, index) => (
               <DraggableEventItem
