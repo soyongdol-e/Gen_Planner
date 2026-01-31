@@ -12,16 +12,22 @@ import { DailyTask, Event } from '../../types';
 import TaskItem from '../common/TaskItem';
 import EventItem from '../common/EventItem';
 import EventModal from '../common/EventModal';
+import TimeTableGrid from '../common/TimeTableGrid';
+import TimeBlockModal from '../common/TimeBlockModal';
 
 export default function DayView() {
-  const { selectedDate, setSelectedDate, setCurrentView } = useApp();
+  const { selectedDate, setSelectedDate, setCurrentView, timeTableUnit } = useApp();
   const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [timeBlocks, setTimeBlocks] = useState<Event[]>([]);
   const [newTaskContent, setNewTaskContent] = useState('');
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | undefined>(undefined);
+  const [isTimeBlockModalOpen, setIsTimeBlockModalOpen] = useState(false);
+  const [editingTimeBlock, setEditingTimeBlock] = useState<Event | undefined>(undefined);
+  const [newBlockTime, setNewBlockTime] = useState<{ start: string; end: string } | null>(null);
 
   // Load tasks and events when date changes
   useEffect(() => {
@@ -37,6 +43,7 @@ export default function DayView() {
     ]);
     setTasks(fetchedTasks);
     setEvents(fetchedEvents.filter(e => e.is_all_day)); // Only all-day events in Event section
+    setTimeBlocks(fetchedEvents.filter(e => e.is_time_table)); // TimeTable blocks
     setLoading(false);
   };
 
@@ -133,6 +140,77 @@ export default function DayView() {
   const handleCloseEventModal = () => {
     setIsEventModalOpen(false);
     setEditingEvent(undefined);
+  };
+
+  // TimeBlock handlers
+  const handleBlockCreate = (startTime: string, endTime: string) => {
+    setNewBlockTime({ start: startTime, end: endTime });
+    setIsTimeBlockModalOpen(true);
+  };
+
+  const handleAddTimeBlock = async (title: string, color: string, startTime: string, endTime: string) => {
+    const dateStr = formatDate(selectedDate);
+    const newBlock = await addEvent(dateStr, title, color, undefined, false, true, startTime, endTime);
+    
+    if (newBlock) {
+      setTimeBlocks([...timeBlocks, newBlock]);
+    }
+  };
+
+  const handleBlockClick = (block: Event) => {
+    setEditingTimeBlock(block);
+    setIsTimeBlockModalOpen(true);
+  };
+
+  const handleUpdateTimeBlock = async (title: string, color: string, startTime: string, endTime: string) => {
+    if (!editingTimeBlock) return;
+    
+    const success = await updateEvent(editingTimeBlock.id, { 
+      title, 
+      color, 
+      start_time: startTime,
+      end_time: endTime 
+    });
+    
+    if (success) {
+      setTimeBlocks(timeBlocks.map(block =>
+        block.id === editingTimeBlock.id
+          ? { ...block, title, color, start_time: startTime, end_time: endTime }
+          : block
+      ));
+      setEditingTimeBlock(undefined);
+    }
+  };
+
+  const handleDeleteTimeBlock = async () => {
+    if (!editingTimeBlock) return;
+    
+    const success = await deleteEvent(editingTimeBlock.id);
+    if (success) {
+      setTimeBlocks(timeBlocks.filter(block => block.id !== editingTimeBlock.id));
+      setEditingTimeBlock(undefined);
+    }
+  };
+
+  const handleBlockMove = async (blockId: string, newStartTime: string, newEndTime: string) => {
+    const success = await updateEvent(blockId, { 
+      start_time: newStartTime,
+      end_time: newEndTime 
+    });
+    
+    if (success) {
+      setTimeBlocks(timeBlocks.map(block =>
+        block.id === blockId
+          ? { ...block, start_time: newStartTime, end_time: newEndTime }
+          : block
+      ));
+    }
+  };
+
+  const handleCloseTimeBlockModal = () => {
+    setIsTimeBlockModalOpen(false);
+    setEditingTimeBlock(undefined);
+    setNewBlockTime(null);
   };
 
   return (
@@ -234,10 +312,22 @@ export default function DayView() {
         </div>
 
         {/* TimeTable Section */}
-        <div className="flex-1 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-          <h3 className="font-semibold mb-4">Time Table</h3>
-          <div className="text-sm text-gray-500">
-            TimeTable Grid (TODO)
+        <div className="flex-1 bg-white border-r border-gray-200 overflow-y-auto">
+          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">
+            <h3 className="font-semibold">Time Table</h3>
+          </div>
+          <div className="p-4">
+            {loading ? (
+              <div className="text-sm text-gray-400">로딩 중...</div>
+            ) : (
+              <TimeTableGrid
+                unit={timeTableUnit}
+                blocks={timeBlocks}
+                onBlockCreate={handleBlockCreate}
+                onBlockClick={handleBlockClick}
+                onBlockMove={handleBlockMove}
+              />
+            )}
           </div>
         </div>
 
@@ -287,6 +377,17 @@ export default function DayView() {
         onClose={handleCloseEventModal}
         onSave={editingEvent ? handleUpdateEvent : handleAddEvent}
         event={editingEvent}
+      />
+
+      {/* TimeBlock Modal */}
+      <TimeBlockModal
+        isOpen={isTimeBlockModalOpen}
+        onClose={handleCloseTimeBlockModal}
+        onSave={editingTimeBlock ? handleUpdateTimeBlock : handleAddTimeBlock}
+        onDelete={editingTimeBlock ? handleDeleteTimeBlock : undefined}
+        block={editingTimeBlock}
+        initialStartTime={newBlockTime?.start}
+        initialEndTime={newBlockTime?.end}
       />
     </div>
   );
