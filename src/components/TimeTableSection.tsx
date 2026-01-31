@@ -1,24 +1,31 @@
-import { useState } from 'react';
-import { Button } from './ui/button';
-import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Palette } from 'lucide-react';
 import type { Event } from '../types';
 import { cn } from './ui/utils';
 
 interface TimeTableSectionProps {
   events: Event[];
-  onEventAdd: (eventData: Omit<Event, 'id' | 'date'>) => void;
+  onEventAdd: (event: Omit<Event, 'id' | 'date'>) => void;
   onEventUpdate: (eventId: string, updates: Partial<Event>) => void;
   onEventDelete: (eventId: string) => void;
 }
 
-const EVENT_COLORS = [
-  { label: '핑크', value: '#ec4899' },
-  { label: '퍼플', value: '#a855f7' },
-  { label: '블루', value: '#3b82f6' },
-  { label: '그린', value: '#10b981' },
-  { label: '옐로우', value: '#f59e0b' },
-  { label: '레드', value: '#ef4444' },
-];
+const START_HOUR = 5;
+const END_HOUR = 24;
+const TIME_SLOTS = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => i + START_HOUR);
+const MINUTE_COLUMNS = 6; // 10-minute blocks per hour
+const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+
+interface BlockPosition {
+  hour: number;
+  column: number;
+}
+
+interface CellData {
+  eventId: string;
+  isFirstCell: boolean;
+  colSpan: number;
+}
 
 export function TimeTableSection({
   events,
@@ -26,195 +33,333 @@ export function TimeTableSection({
   onEventUpdate,
   onEventDelete,
 }: TimeTableSectionProps) {
-  const [isAdding, setIsAdding] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [title, setTitle] = useState('');
-  const [color, setColor] = useState(EVENT_COLORS[0].value);
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('10:00');
-
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-
-  const handleSave = () => {
-    if (!title.trim()) return;
-
-    if (editingId) {
-      onEventUpdate(editingId, { title, color, startTime, endTime });
-      setEditingId(null);
-    } else {
-      onEventAdd({
-        title,
-        color,
-        startTime,
-        endTime,
-        isAllDay: false,
-        isTimeTable: true,
-      });
-    }
-
-    // Reset
-    setTitle('');
-    setColor(EVENT_COLORS[0].value);
-    setStartTime('09:00');
-    setEndTime('10:00');
-    setIsAdding(false);
+  const [dragStart, setDragStart] = useState<BlockPosition | null>(null);
+  const [dragEnd, setDragEnd] = useState<BlockPosition | null>(null);
+  const [editingEvent, setEditingEvent] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState(COLORS[0]);
+  const [showColorPicker, setShowColorPicker] = useState<string | null>(null);
+  
+  // Format time as HH:MM
+  const formatTime = (hour: number, minute: number = 0): string => {
+    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
   };
-
-  const handleEdit = (event: Event) => {
-    setEditingId(event.id);
-    setTitle(event.title);
-    setColor(event.color);
-    setStartTime(event.startTime || '09:00');
-    setEndTime(event.endTime || '10:00');
-    setIsAdding(true);
-  };
-
-  const handleCancel = () => {
-    setIsAdding(false);
-    setEditingId(null);
-    setTitle('');
-    setColor(EVENT_COLORS[0].value);
-    setStartTime('09:00');
-    setEndTime('10:00');
-  };
-
-  // Parse time to minutes for positioning
-  const timeToMinutes = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  const getEventStyle = (event: Event) => {
-    if (!event.startTime || !event.endTime) return {};
-
-    const startMinutes = timeToMinutes(event.startTime);
-    const endMinutes = timeToMinutes(event.endTime);
-    const duration = endMinutes - startMinutes;
-
-    const hourHeight = 60; // pixels per hour
-    const top = (startMinutes / 60) * hourHeight;
-    const height = (duration / 60) * hourHeight;
-
+  
+  // Parse time string to get hour and minute
+  const parseTime = (timeStr: string): { hour: number; minute: number } => {
+    const [hourStr, minuteStr] = timeStr.split(':');
     return {
-      position: 'absolute' as const,
-      top: `${top}px`,
-      left: '60px',
-      right: '0',
-      height: `${height}px`,
-      backgroundColor: event.color,
-      color: 'white',
-      borderRadius: '4px',
-      padding: '8px',
-      zIndex: 10,
+      hour: parseInt(hourStr),
+      minute: parseInt(minuteStr),
     };
   };
-
+  
+  // Get cell map for each row
+  const getCellMap = (): Map<string, CellData> => {
+    const cellMap = new Map<string, CellData>();
+    
+    events.forEach(event => {
+      if (event.isAllDay || !event.startTime || !event.endTime) return;
+      
+      const start = parseTime(event.startTime);
+      const end = parseTime(event.endTime);
+      
+      const startHour = start.hour;
+      const startCol = Math.floor(start.minute / 10);
+      const endHour = end.minute === 0 ? end.hour - 1 : end.hour;
+      const endCol = end.minute === 0 ? 5 : Math.ceil(end.minute / 10) - 1;
+      
+      // Process each row separately
+      for (let h = startHour; h <= endHour; h++) {
+        const isFirstRow = h === startHour;
+        const isLastRow = h === endHour;
+        
+        let rowStartCol: number;
+        let rowEndCol: number;
+        
+        if (isFirstRow && isLastRow) {
+          // Same row
+          rowStartCol = startCol;
+          rowEndCol = endCol;
+        } else if (isFirstRow) {
+          // First row of multi-row event
+          rowStartCol = startCol;
+          rowEndCol = MINUTE_COLUMNS - 1;
+        } else if (isLastRow) {
+          // Last row of multi-row event
+          rowStartCol = 0;
+          rowEndCol = endCol;
+        } else {
+          // Middle row of multi-row event
+          rowStartCol = 0;
+          rowEndCol = MINUTE_COLUMNS - 1;
+        }
+        
+        const colSpan = rowEndCol - rowStartCol + 1;
+        
+        // Mark cells in this row
+        for (let c = rowStartCol; c <= rowEndCol; c++) {
+          const key = `${h}-${c}`;
+          cellMap.set(key, {
+            eventId: event.id,
+            isFirstCell: c === rowStartCol,
+            colSpan: colSpan,
+          });
+        }
+      }
+    });
+    
+    return cellMap;
+  };
+  
+  const handleBlockMouseDown = (hour: number, column: number) => {
+    setDragStart({ hour, column });
+    setDragEnd({ hour, column });
+  };
+  
+  const handleBlockMouseEnter = (hour: number, column: number) => {
+    if (dragStart !== null) {
+      setDragEnd({ hour, column });
+    }
+  };
+  
+  useEffect(() => {
+    const handleMouseUp = () => {
+      if (dragStart !== null && dragEnd !== null) {
+        const startHour = Math.min(dragStart.hour, dragEnd.hour);
+        const endHour = Math.max(dragStart.hour, dragEnd.hour);
+        const startCol = Math.min(dragStart.column, dragEnd.column);
+        const endCol = Math.max(dragStart.column, dragEnd.column);
+        
+        const startMinute = startCol * 10;
+        const endMinute = (endCol + 1) * 10;
+        
+        let finalEndHour = endHour;
+        let finalEndMinute = endMinute;
+        if (finalEndMinute === 60) {
+          finalEndHour += 1;
+          finalEndMinute = 0;
+        }
+        
+        const newEvent = {
+          title: '새 일정',
+          startTime: formatTime(startHour, startMinute),
+          endTime: formatTime(finalEndHour, finalEndMinute),
+          color: selectedColor,
+          isAllDay: false,
+          isTimeTable: true, // Mark as Time Table event
+        };
+        
+        onEventAdd(newEvent);
+      }
+      
+      setDragStart(null);
+      setDragEnd(null);
+    };
+    
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragStart, dragEnd, selectedColor, onEventAdd]);
+  
+  const isBlockInSelection = (hour: number, column: number): boolean => {
+    if (dragStart === null || dragEnd === null) return false;
+    
+    const minHour = Math.min(dragStart.hour, dragEnd.hour);
+    const maxHour = Math.max(dragStart.hour, dragEnd.hour);
+    const minCol = Math.min(dragStart.column, dragEnd.column);
+    const maxCol = Math.max(dragStart.column, dragEnd.column);
+    
+    // Check if hour is within range
+    if (hour < minHour || hour > maxHour) return false;
+    
+    // If single hour selection
+    if (minHour === maxHour) {
+      return column >= minCol && column <= maxCol;
+    }
+    
+    // Multi-hour selection
+    if (hour === minHour) {
+      // First row: from minCol to end
+      return column >= minCol;
+    } else if (hour === maxHour) {
+      // Last row: from start to maxCol
+      return column <= maxCol;
+    } else {
+      // Middle rows: all columns
+      return true;
+    }
+  };
+  
+  const handleEventClick = (eventId: string) => {
+    setEditingEvent(eventId);
+  };
+  
+  const handleTitleChange = (eventId: string, newTitle: string) => {
+    onEventUpdate(eventId, { title: newTitle });
+  };
+  
+  const handleColorChange = (eventId: string, color: string) => {
+    onEventUpdate(eventId, { color });
+    setShowColorPicker(null);
+  };
+  
+  const cellMap = getCellMap();
+  
   return (
     <div className="bg-white rounded-lg shadow-sm h-full flex flex-col">
-      <div className="p-4 border-b flex items-center justify-between">
-        <h2 className="font-semibold">Time Table</h2>
-        <Button size="sm" onClick={() => setIsAdding(true)}>
-          <Plus className="w-4 h-4 mr-1" />
-          추가
-        </Button>
+      <div className="flex items-center justify-between p-3 border-b">
+        <h2 className="text-base font-semibold">Time Table</h2>
+        <div className="flex gap-1">
+          {COLORS.map((color) => (
+            <button
+              key={color}
+              onClick={() => setSelectedColor(color)}
+              className={cn(
+                'w-5 h-5 rounded-full border-2 transition-all',
+                selectedColor === color ? 'border-gray-800 scale-110' : 'border-transparent'
+              )}
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </div>
       </div>
-
-      {isAdding && (
-        <div className="p-4 border-b bg-gray-50 space-y-3">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="일정 제목"
-            className="w-full px-3 py-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
-
-          <div className="flex gap-2">
-            <input
-              type="time"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              className="flex-1 px-3 py-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <span className="flex items-center">~</span>
-            <input
-              type="time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              className="flex-1 px-3 py-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-          </div>
-
-          <div className="flex gap-2">
-            {EVENT_COLORS.map((c) => (
-              <button
-                key={c.value}
-                onClick={() => setColor(c.value)}
-                className={cn(
-                  'w-8 h-8 rounded-full border-2',
-                  color === c.value ? 'border-gray-900' : 'border-transparent'
-                )}
-                style={{ backgroundColor: c.value }}
-                title={c.label}
-              />
-            ))}
-          </div>
-
-          <div className="flex gap-2">
-            <Button size="sm" onClick={handleSave} className="flex-1">
-              {editingId ? '수정' : '추가'}
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleCancel} className="flex-1">
-              취소
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <div className="flex-1 overflow-y-auto relative">
-        {/* Time Grid */}
-        <div className="relative" style={{ height: `${24 * 60}px` }}>
-          {hours.map((hour) => (
-            <div
-              key={hour}
-              className="flex items-start border-b"
-              style={{ height: '60px' }}
-            >
-              <div className="w-14 text-xs text-gray-500 text-right pr-2 pt-1">
-                {hour.toString().padStart(2, '0')}:00
-              </div>
-              <div className="flex-1 relative"></div>
-            </div>
-          ))}
-
-          {/* Events */}
-          {events.map((event) => (
-            <div key={event.id} style={getEventStyle(event)} className="group">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-semibold truncate">{event.title}</div>
-                  <div className="text-xs opacity-90">
-                    {event.startTime} - {event.endTime}
+      
+      <div className="flex-1 select-none flex flex-col">
+        {TIME_SLOTS.map((hour) => {
+          const rowCells: React.ReactElement[] = [];
+          let skipColumns = 0;
+          
+          for (let column = 0; column < MINUTE_COLUMNS; column++) {
+            if (skipColumns > 0) {
+              skipColumns--;
+              continue;
+            }
+            
+            const key = `${hour}-${column}`;
+            const cellData = cellMap.get(key);
+            
+            // Render event cell
+            if (cellData && cellData.isFirstCell) {
+              const event = events.find(e => e.id === cellData.eventId);
+              if (event) {
+                const isEditing = editingEvent === event.id;
+                const start = parseTime(event.startTime!);
+                const isFirstRow = hour === start.hour;
+                
+                skipColumns = cellData.colSpan - 1;
+                
+                rowCells.push(
+                  <div
+                    key={column}
+                    className="p-1 cursor-pointer relative group"
+                    style={{ 
+                      gridColumn: `span ${cellData.colSpan}`,
+                      backgroundColor: event.color,
+                      borderLeft: '1px solid rgb(209 213 219)',
+                      borderRight: '1px solid rgb(209 213 219)',
+                      borderTop: isFirstRow ? '1px solid rgb(209 213 219)' : 'none',
+                      borderBottom: '1px solid rgb(209 213 219)',
+                    }}
+                    onClick={() => handleEventClick(event.id)}
+                  >
+                    {isFirstRow && (
+                      <div className="text-white text-[10px]">
+                        <div className="font-medium opacity-90 mb-1">
+                          {event.startTime} - {event.endTime}
+                        </div>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={event.title}
+                            onChange={(e) => handleTitleChange(event.id, e.target.value)}
+                            onBlur={() => setEditingEvent(null)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') setEditingEvent(null);
+                              if (e.key === 'Escape') setEditingEvent(null);
+                            }}
+                            className="w-full bg-white text-gray-900 px-1 py-0.5 text-[10px] rounded"
+                            autoFocus
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        ) : (
+                          <div className="font-semibold">{event.title}</div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {isFirstRow && (
+                      <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowColorPicker(showColorPicker === event.id ? null : event.id);
+                          }}
+                          className="p-0.5 hover:bg-white/20 rounded bg-black/20"
+                        >
+                          <Palette className="size-2.5 text-white" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEventDelete(event.id);
+                          }}
+                          className="p-0.5 hover:bg-white/20 rounded bg-black/20"
+                        >
+                          <X className="size-2.5 text-white" />
+                        </button>
+                      </div>
+                    )}
+                    
+                    {isFirstRow && showColorPicker === event.id && (
+                      <div
+                        className="absolute top-full mt-1 left-0 bg-white rounded shadow-lg p-1.5 flex gap-1 z-20"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {COLORS.map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => handleColorChange(event.id, color)}
+                            className="w-5 h-5 rounded-full border-2 border-gray-200 hover:scale-110 transition-transform"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100">
-                  <button
-                    onClick={() => handleEdit(event)}
-                    className="p-1 hover:bg-white/20 rounded"
-                  >
-                    <Edit2 className="w-3 h-3" />
-                  </button>
-                  <button
-                    onClick={() => onEventDelete(event.id)}
-                    className="p-1 hover:bg-white/20 rounded"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
+                );
+              }
+            } else if (!cellData) {
+              // Render empty cell
+              rowCells.push(
+                <div
+                  key={column}
+                  className={cn(
+                    'border border-gray-200 cursor-crosshair transition-colors',
+                    isBlockInSelection(hour, column) ? 'bg-blue-300' : 'hover:bg-blue-50'
+                  )}
+                  onMouseDown={() => handleBlockMouseDown(hour, column)}
+                  onMouseEnter={() => handleBlockMouseEnter(hour, column)}
+                />
+              );
+            }
+          }
+          
+          return (
+            <div key={hour} className="flex-1 flex border-b last:border-b-0">
+              <div className="text-[11px] text-gray-500 w-12 flex-shrink-0 px-2 text-center pt-1 border-r border-gray-200">
+                {formatTime(hour)}
+              </div>
+              <div className="flex-1 grid grid-cols-6">
+                {rowCells}
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
+      </div>
+      
+      <div className="p-2 text-[10px] text-gray-500 text-center border-t">
+        블록을 드래그하여 일정을 추가하세요
       </div>
     </div>
   );
