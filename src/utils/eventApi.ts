@@ -70,6 +70,39 @@ export const getEventsByMonth = async (year: number, month: number): Promise<Eve
   }));
 };
 
+// Get events for a date range (for Week View)
+export const getEventsByDateRange = async (startDate: string, endDate: string): Promise<Event[]> => {
+  const userId = getCurrentUserId();
+  
+  const { data, error } = await supabase
+    .from('events')
+    .select('*')
+    .eq('user_id', userId)
+    .gte('date', startDate)
+    .lte('date', endDate);
+
+  if (error) {
+    console.error('Error fetching events by date range:', error);
+    return [];
+  }
+
+  return data.map(event => ({
+    id: event.id,
+    user_id: event.user_id,
+    title: event.title,
+    date: event.date,
+    start_time: event.start_time,
+    end_time: event.end_time,
+    color: event.color,
+    description: event.description,
+    is_all_day: event.is_all_day,
+    is_time_table: event.is_time_table,
+    order: event.order,
+    created_at: event.created_at,
+    updated_at: event.updated_at
+  }));
+};
+
 // Add a new event
 export const addEvent = async (
   date: string,
