@@ -1,73 +1,127 @@
-# React + TypeScript + Vite
+# 디지털 플래너 플랫폼 (Digital Planner)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+개인 맞춤형 디지털 플래너 웹 애플리케이션
 
-Currently, two official plugins are available:
+## 프로젝트 개요
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **목표**: 년/월/주/일 단위를 자유롭게 전환하며 계획을 관리하는 올인원 디지털 플래너
+- **현재 단계**: 프로토타입 개발 중
+- **기술 스택**: React 18 + TypeScript + Vite + Tailwind CSS + Supabase
 
-## React Compiler
+## 주요 기능
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 구현 완료
+- ✅ 프로젝트 초기 설정
+- ✅ Supabase 연동
+- ✅ TypeScript 타입 정의
+- ✅ 데이터베이스 스키마
 
-## Expanding the ESLint configuration
+### 구현 예정
+- ⏳ 4가지 달력 뷰 (Year/Month/Week/Day)
+- ⏳ Event 관리 (일정 추가/수정/삭제)
+- ⏳ TimeTable 그리드 시스템 (드래그로 시간 블록 생성)
+- ⏳ Task 체크리스트
+- ⏳ 메모 시스템 (Monthly/Weekly/Daily)
+- ⏳ 반복 일정
+- ⏳ Comment 에디터
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 설치 및 실행
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. 의존성 설치
+\`\`\`bash
+npm install
+\`\`\`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 2. Supabase 데이터베이스 설정
+1. Supabase 대시보드 접속: https://app.supabase.com
+2. 프로젝트 선택
+3. SQL Editor에서 `supabase-schema.sql` 파일 내용 실행
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 3. 환경 변수 설정
+`.env` 파일이 이미 생성되어 있습니다.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 4. 개발 서버 실행
+\`\`\`bash
+npm run dev
+\`\`\`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+브라우저에서 http://localhost:5173 접속
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 데이터 구조
+
+### 데이터베이스 테이블
+1. **events** - 일정 관리
+2. **monthly_memos** - 월별 메모
+3. **weekly_memos** - 주별 메모
+4. **weekly_checklist_items** - 주별 체크리스트
+5. **daily_tasks** - 일별 할일
+6. **daily_comments** - 일별 코멘트
+7. **user_settings** - 사용자 설정
+8. **holidays_cache** - 공휴일 캐시
+
+### 데모 사용자
+- User ID: `00000000-0000-0000-0000-000000000000`
+- 프로토타입 단계에서는 로그인 없이 데모 사용자로 작동
+
+## 개발 로드맵
+
+### Phase 1: 기본 구조 (현재)
+- [x] 프로젝트 설정
+- [ ] Month View 구현
+- [ ] Day View 구현
+
+### Phase 2: TimeTable 시스템
+- [ ] 시간 그리드 생성
+- [ ] 드래그 블록 생성
+- [ ] 블록 이동/크기 조정
+
+### Phase 3: Event & Task
+- [ ] Event CRUD
+- [ ] Task 체크리스트
+- [ ] 색상 시스템
+
+### Phase 4: 메모 시스템
+- [ ] Monthly Memo
+- [ ] Weekly Memo
+- [ ] Daily Comment (텍스트)
+
+### Phase 5: 확장 기능
+- [ ] Week View
+- [ ] Year View
+- [ ] 반복 일정
+
+## 기술 스택
+
+- **Frontend**: React 18.3.1 + TypeScript
+- **Build Tool**: Vite 6.x
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
+- **날짜 처리**: date-fns
+- **드래그 앤 드롭**: react-dnd
+
+## 프로젝트 구조
+
+\`\`\`
+webapp/
+├── src/
+│   ├── lib/
+│   │   └── supabase.ts      # Supabase 클라이언트
+│   ├── types/
+│   │   └── index.ts         # TypeScript 타입 정의
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+├── supabase-schema.sql      # 데이터베이스 스키마
+├── .env                     # 환경 변수 (Supabase 키)
+└── package.json
+\`\`\`
+
+## 개발 상태
+
+- **최종 업데이트**: 2026-01-31
+- **현재 단계**: Phase 1 - 프로젝트 초기 설정 완료
+- **다음 단계**: Month View 레이아웃 구현
+
+## 라이선스
+
+MIT
