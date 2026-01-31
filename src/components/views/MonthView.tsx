@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { 
   formatMonthYear, 
@@ -11,8 +11,9 @@ import {
   getPrevMonth
 } from '../../utils/dateUtils';
 import { getEventsByMonth } from '../../utils/eventApi';
-import { getTasksByDate } from '../../utils/taskApi';
-import { Event, DailyTask } from '../../types';
+import { getMonthlyMemo, saveMonthlyMemo } from '../../utils/memoApi';
+import { useAutoSave } from '../../hooks/useAutoSave';
+import { Event } from '../../types';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -20,14 +21,17 @@ export default function MonthView() {
   const { selectedDate, setSelectedDate, setCurrentView, weekStartsOn } = useApp();
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsByDate, setEventsByDate] = useState<Record<string, Event[]>>({});
+  const [memoContent, setMemoContent] = useState('');
+  const [memoCollapsed, setMemoCollapsed] = useState(false);
   
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth() + 1;
   const calendarDays = getCalendarDays(year, month, weekStartsOn);
 
-  // Load events when month changes
+  // Load events and memo when month changes
   useEffect(() => {
     loadEvents();
+    loadMemo();
   }, [year, month]);
 
   const loadEvents = async () => {
@@ -44,6 +48,18 @@ export default function MonthView() {
     });
     setEventsByDate(grouped);
   };
+
+  const loadMemo = async () => {
+    const memo = await getMonthlyMemo(year, month);
+    setMemoContent(memo?.content || '');
+  };
+
+  // Auto-save memo
+  const handleSaveMemo = useCallback(async (content: string) => {
+    await saveMonthlyMemo(year, month, content);
+  }, [year, month]);
+
+  useAutoSave(memoContent, handleSaveMemo, 500);
 
   const handlePrevMonth = () => {
     setSelectedDate(getPrevMonth(selectedDate));
@@ -131,19 +147,49 @@ export default function MonthView() {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold">Monthly Memo</h3>
-              <button className="text-sm text-gray-400">∨</button>
+              <button 
+                onClick={() => setMemoCollapsed(!memoCollapsed)}
+                className="text-sm text-gray-400 hover:text-gray-600"
+              >
+                {memoCollapsed ? '∧' : '∨'}
+              </button>
             </div>
-            <textarea 
-              className="w-full h-32 p-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="이번 달 메모..."
-            />
+            {!memoCollapsed && (
+              <textarea 
+                value={memoContent}
+                onChange={(e) => setMemoContent(e.target.value)}
+                className="w-full h-32 p-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="이번 달 메모..."
+              />
+            )}
           </div>
 
           <div>
             <h3 className="font-semibold mb-2">일정 목록</h3>
-            <div className="text-sm text-gray-500">
-              일정이 없습니다
-            </div>
+            {events.length === 0 ? (
+              <div className="text-sm text-gray-500">
+                일정이 없습니다
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {events.slice(0, 10).map(event => (
+                  <div key={event.id} className="text-sm flex items-center gap-2">
+                    <div 
+                      className="w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: event.color }}
+                    />
+                    <span className="text-gray-700 truncate">
+                      {event.date.split('-')[2]}일 - {event.title}
+                    </span>
+                  </div>
+                ))}
+                {events.length > 10 && (
+                  <div className="text-xs text-gray-400">
+                    +{events.length - 10}개 더보기
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
