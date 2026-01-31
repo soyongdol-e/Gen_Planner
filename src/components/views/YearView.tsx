@@ -99,7 +99,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
     return (
       <div
         onClick={() => onMonthClick?.(currentYear, month)}
-        className="w-[350px] h-[240px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
+        className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
       >
         {/* Month Title - 24px, Pretendard 700, #111111, Center aligned */}
         <h3 className="text-[24px] font-bold leading-[150%] mb-2 text-center" style={{ color: '#111111' }}>
@@ -171,7 +171,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
   return (
     <div className="h-screen flex flex-col bg-white">
       {/* Navigation */}
-      <div className="flex items-center justify-center pt-[52px] pb-8">
+      <div className="flex items-center justify-center pt-[30px] pb-6">
         {/* Previous Year - Pretendard Medium */}
         <div
           onClick={() => handleYearClick(prevYear)}
@@ -219,9 +219,9 @@ export function YearView({ onMonthClick }: YearViewProps) {
       </div>
       
       {/* 12 Month Grid */}
-      <div className="flex-1 overflow-auto px-[192px] py-12">
+      <div className="flex-1 overflow-auto px-[192px] py-8">
         <div className="max-w-[1920px] mx-auto">
-          <div className="grid grid-cols-4 gap-x-[44px] gap-y-[55px]">
+          <div className="grid grid-cols-4 gap-x-[44px] gap-y-[40px]">
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i}>
                 {renderMiniMonth(i)}
