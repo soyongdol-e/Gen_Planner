@@ -6,10 +6,18 @@
 
 - **이름**: Gen Planner
 - **목표**: 년/월/주/일 단위를 자유롭게 전환하며 계획을 관리하는 올인원 디지털 플래너
-- **현재 단계**: ✅ **Figma 기반 UI 완성! 4개 뷰 모두 작동!**
-- **기술 스택**: React 18 + TypeScript + Vite + Tailwind CSS + localStorage
+- **현재 단계**: ✅ **KRDS 타이포그래피 시스템 적용 완료!**
+- **기술 스택**: React 18 + TypeScript + Vite + Tailwind CSS + Pretendard Font + localStorage
 - **배포 URL**: https://gen-planner.pages.dev (Cloudflare Pages)
 - **GitHub**: https://github.com/soyongdol-e/Gen_Planner
+
+## 🎨 디자인 시스템
+
+### 타이포그래피
+- **서체**: Pretendard (한국형 디지털 서비스 디자인시스템 권장)
+- **기본 크기**: 17px (KRDS 표준)
+- **줄 간격**: 150% (가독성 최적화)
+- **타입 스케일**: Display / Heading / Body / Label 계층 구조
 
 ## ✅ 구현 완료 기능
 
