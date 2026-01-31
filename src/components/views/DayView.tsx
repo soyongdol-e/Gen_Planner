@@ -260,31 +260,34 @@ export function DayView({ initialDate, onMonthClick, onWeekClick }: DayViewProps
           onDateClick={handleDateClick}
         />
         
-        {/* Main Content - 3 Columns */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 overflow-auto">
-          {/* Task Column */}
-          <div className="h-full min-h-[500px]">
-            <TaskSection
-              tasks={tasks}
-              onTaskToggle={handleTaskToggle}
-              onTaskAdd={handleTaskAdd}
-              onTaskDelete={handleTaskDelete}
-            />
+        {/* Main Content - 2 Columns: (Task + TimeTable) | (Event + Comment) */}
+        <div className="flex-1 flex gap-4 p-4 overflow-auto">
+          {/* Left-Center Column: Task and TimeTable side by side */}
+          <div className="flex-1 flex gap-4">
+            {/* Task Section (Left Half) */}
+            <div className="flex-1 h-full min-h-[500px]">
+              <TaskSection
+                tasks={tasks}
+                onTaskToggle={handleTaskToggle}
+                onTaskAdd={handleTaskAdd}
+                onTaskDelete={handleTaskDelete}
+              />
+            </div>
+            
+            {/* Time Table Section (Right Half) */}
+            <div className="flex-1 h-full min-h-[500px]">
+              <TimeTableSection
+                events={timeTableEvents}
+                onEventAdd={handleEventAdd}
+                onEventUpdate={handleEventUpdate}
+                onEventDelete={handleEventDelete}
+              />
+            </div>
           </div>
           
-          {/* Time Table Column */}
-          <div className="h-full min-h-[500px]">
-            <TimeTableSection
-              events={timeTableEvents}
-              onEventAdd={handleEventAdd}
-              onEventUpdate={handleEventUpdate}
-              onEventDelete={handleEventDelete}
-            />
-          </div>
-          
-          {/* Event + Comment Column (Stacked) */}
-          <div className="h-full min-h-[500px] flex flex-col gap-4">
-            {/* Event Section (Top Half) */}
+          {/* Right Column: Event + Comment (Stacked) */}
+          <div className="w-80 h-full min-h-[500px] flex flex-col gap-4">
+            {/* Event Section (Top) */}
             <div className="flex-1 min-h-[240px]">
               <EventSection
                 events={regularEvents}
@@ -293,7 +296,7 @@ export function DayView({ initialDate, onMonthClick, onWeekClick }: DayViewProps
               />
             </div>
             
-            {/* Comment Section (Bottom Half) */}
+            {/* Comment Section (Bottom) */}
             <div className="flex-1 min-h-[240px]">
               <CommentSection
                 elements={commentElements}
