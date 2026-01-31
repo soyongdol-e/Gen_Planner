@@ -102,17 +102,17 @@ export function YearView({ onMonthClick }: YearViewProps) {
         className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
       >
         {/* Month Title - 24px, Pretendard 700, #111111, Center aligned, No margin */}
-        <h3 className="text-[24px] font-bold leading-none text-center" style={{ color: '#111111' }}>
+        <h3 className="text-[24px] font-bold leading-none text-center m-0 mb-3" style={{ color: '#111111' }}>
           {month + 1}월
         </h3>
         
         {/* Week day headers - 17px, Pretendard 500, tight line-height */}
-        <div className="grid grid-cols-7 gap-x-2 mb-2">
+        <div className="grid grid-cols-7 gap-x-2 mb-2 mt-0">
           {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
             <div
               key={day}
               className={cn(
-                'text-[17px] font-medium leading-none text-center',
+                'text-[17px] font-medium leading-none text-center m-0 p-0',
                 idx === 0 && 'text-[#FF5B45]',
                 idx === 6 && 'text-[#358BFB]',
                 idx > 0 && idx < 6 && 'text-[#505050]'
@@ -124,10 +124,10 @@ export function YearView({ onMonthClick }: YearViewProps) {
         </div>
         
         {/* Divider Line - 2px thickness, rounded ends, #E2E2E2 */}
-        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[10px]" />
+        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[10px] mt-0" />
         
         {/* Calendar days - 15px, Pretendard 600, 10px vertical gap between weeks */}
-        <div className="grid grid-cols-7 gap-x-2 gap-y-[10px]">
+        <div className="grid grid-cols-7 gap-x-2 gap-y-[10px] mt-0">
           {days.map((day, idx) => {
             const isToday = isSameDay(day.date, today);
             const hasEvents = getEventsForDate(day.date).length > 0;
@@ -136,7 +136,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
               <div
                 key={idx}
                 className={cn(
-                  'text-[15px] font-semibold leading-none text-center relative flex items-center justify-center',
+                  'text-[15px] font-semibold leading-none text-center relative flex items-center justify-center m-0 p-0',
                   isToday && 'text-gray-900',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 0 && 'text-[#FF5B45]',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]',
@@ -175,7 +175,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
         {/* Previous Year - Pretendard Medium - 40px */}
         <div
           onClick={() => handleYearClick(prevYear)}
-          className="text-[40px] font-medium leading-[150%] transition-colors hover:text-[#505050] cursor-pointer"
+          className="text-[40px] font-medium leading-[150%] transition-colors hover:text-[#505050] cursor-pointer m-0 p-0"
           style={{ color: '#E2E2E2' }}
         >
           {prevYear}
@@ -184,7 +184,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
         {/* Left Arrow Icon - 40px gap from previous year */}
         <div
           onClick={handlePrevYear}
-          className="ml-[40px] transition-colors hover:text-[#505050] cursor-pointer"
+          className="ml-[40px] transition-colors hover:text-[#505050] cursor-pointer m-0 p-0"
         >
           <ChevronLeft 
             className="size-8" 
@@ -193,14 +193,14 @@ export function YearView({ onMonthClick }: YearViewProps) {
         </div>
         
         {/* Current Year - Pretendard Extrabold - 50px - 120px gap from arrow */}
-        <div className="text-[50px] font-extrabold leading-[150%] mx-[120px]">
+        <div className="text-[50px] font-extrabold leading-[150%] mx-[120px] my-0 p-0">
           {currentYear}
         </div>
         
         {/* Right Arrow Icon - 120px gap from current year */}
         <div
           onClick={handleNextYear}
-          className="transition-colors hover:text-[#505050] cursor-pointer"
+          className="transition-colors hover:text-[#505050] cursor-pointer m-0 p-0"
         >
           <ChevronRight 
             className="size-8" 
@@ -211,7 +211,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
         {/* Next Year - Pretendard Medium - 40px - 40px gap from arrow */}
         <div
           onClick={() => handleYearClick(nextYear)}
-          className="ml-[40px] text-[40px] font-medium leading-[150%] transition-colors hover:text-[#505050] cursor-pointer"
+          className="ml-[40px] text-[40px] font-medium leading-[150%] transition-colors hover:text-[#505050] cursor-pointer m-0 p-0"
           style={{ color: '#E2E2E2' }}
         >
           {nextYear}
