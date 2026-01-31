@@ -6,8 +6,6 @@ import {
   isSameDay,
   getDaysInMonth,
   getFirstDayOfMonth,
-  getMonthName,
-  isSunday,
   formatDate,
 } from '../../utils/dateUtils';
 import { getEvents } from '../../utils/storage';
@@ -89,10 +87,10 @@ export function YearView({ onMonthClick }: YearViewProps) {
     return (
       <button
         onClick={() => onMonthClick?.(currentYear, month)}
-        className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
+        className="p-4 hover:bg-gray-50 transition-colors"
       >
-        <h3 className="text-body-md-bold mb-2 text-center">
-          {getMonthName(month, 'ko-KR')}
+        <h3 className="text-heading-sm mb-3 text-center">
+          {month + 1}월
         </h3>
         <div className="grid grid-cols-7 gap-0.5">
           {/* Week day headers - abbreviated */}
@@ -101,8 +99,8 @@ export function YearView({ onMonthClick }: YearViewProps) {
               key={day}
               className={cn(
                 'text-body-xs text-center font-medium',
-                idx === 0 && 'text-red-500',
-                idx === 6 && 'text-blue-500'
+                idx === 0 && 'text-[#FF5B45]',
+                idx === 6 && 'text-[#358BFB]'
               )}
             >
               {day}
@@ -122,7 +120,8 @@ export function YearView({ onMonthClick }: YearViewProps) {
                   isToday && 'bg-teal-400 text-white rounded-full',
                   !isToday && day.isCurrentMonth && 'text-gray-900',
                   !isToday && !day.isCurrentMonth && 'text-gray-300',
-                  !isToday && day.isCurrentMonth && isSunday(day.date) && 'text-red-500',
+                  !isToday && day.isCurrentMonth && day.date.getDay() === 0 && 'text-[#FF5B45]',
+                  !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]',
                   hasEvents && !isToday && 'font-semibold'
                 )}
               >
@@ -151,18 +150,18 @@ export function YearView({ onMonthClick }: YearViewProps) {
         
         <button
           onClick={() => handleYearClick(prevYear)}
-          className="text-heading-md text-gray-400 hover:text-gray-600 transition-colors px-4"
+          className="text-heading-lg text-gray-300 hover:text-gray-400 transition-colors px-4"
         >
           {prevYear}
         </button>
         
-        <div className="text-display-md px-8">
+        <div className="text-display-lg px-8">
           {currentYear}
         </div>
         
         <button
           onClick={() => handleYearClick(nextYear)}
-          className="text-heading-md text-gray-400 hover:text-gray-600 transition-colors px-4"
+          className="text-heading-lg text-gray-300 hover:text-gray-400 transition-colors px-4"
         >
           {nextYear}
         </button>
@@ -178,7 +177,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
       {/* 12 Month Grid */}
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-6">
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i}>
                 {renderMiniMonth(i)}
