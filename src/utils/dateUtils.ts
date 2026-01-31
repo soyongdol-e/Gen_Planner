@@ -35,13 +35,40 @@ export const getCalendarDays = (
   month: number, 
   weekStartsOn: 0 | 1 = 0
 ): Date[] => {
-  const date = new Date(year, month - 1, 1);
-  const monthStart = startOfMonth(date);
-  const monthEnd = endOfMonth(date);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn });
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn });
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
   
-  return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  // Get the day of week for first day (0 = Sunday, 6 = Saturday)
+  let firstDayOfWeek = firstDay.getDay();
+  
+  // Adjust if week starts on Monday
+  if (weekStartsOn === 1) {
+    firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+  }
+  
+  // Calculate start date (might be from previous month)
+  const startDate = new Date(year, month - 1, 1 - firstDayOfWeek);
+  
+  // Get last day of week for last day of month
+  let lastDayOfWeek = lastDay.getDay();
+  if (weekStartsOn === 1) {
+    lastDayOfWeek = lastDayOfWeek === 0 ? 6 : lastDayOfWeek - 1;
+  }
+  
+  // Calculate end date (might be from next month)
+  const daysToAdd = weekStartsOn === 0 ? (6 - lastDayOfWeek) : (6 - lastDayOfWeek);
+  const endDate = new Date(year, month, lastDay.getDate() + daysToAdd);
+  
+  // Generate array of dates
+  const days: Date[] = [];
+  const current = new Date(startDate);
+  
+  while (current <= endDate) {
+    days.push(new Date(current));
+    current.setDate(current.getDate() + 1);
+  }
+  
+  return days;
 };
 
 // Check if date is today
