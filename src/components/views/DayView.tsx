@@ -1,400 +1,310 @@
 import { useState, useEffect } from 'react';
-import { useApp } from '../../contexts/AppContext';
-import { 
-  formatDay,
+import { Button } from '../ui/button';
+import { NavigationBar } from '../NavigationBar';
+import { DailySidebar } from '../DailySidebar';
+import { TaskSection } from '../TaskSection';
+import { TimeTableSection } from '../TimeTableSection';
+import { EventSection } from '../EventSection';
+import { CommentSection } from '../CommentSection';
+import type { Event, DailyTask, DailyComment, CommentElement, WeeklyChecklistItem } from '../../types';
+import {
   formatDate,
-  getNextDay,
-  getPrevDay
+  addDays,
+  startOfWeek,
+  getToday,
 } from '../../utils/dateUtils';
-import { getTasksByDate, addTask, toggleTask, deleteTask, updateTask } from '../../utils/taskApi';
-import { getEventsByDate, addEvent, updateEvent, deleteEvent } from '../../utils/eventApi';
-import type { DailyTask, Event } from '../../types';
-import TaskItem from '../common/TaskItem';
-import EventItem from '../common/EventItem';
-import EventModal from '../common/EventModal';
-import TimeTableGrid from '../common/TimeTableGrid';
-import TimeBlockModal from '../common/TimeBlockModal';
+import {
+  getEventsByDate,
+  addEvent,
+  updateEvent,
+  deleteEvent,
+  getDailyTasksByDate,
+  addDailyTask,
+  updateDailyTask,
+  deleteDailyTask,
+  getDailyComment,
+  saveDailyComment,
+  getMonthlyMemo,
+  getWeeklyMemo,
+  getWeeklyChecklistByWeek,
+  updateWeeklyChecklistItem,
+} from '../../utils/storage';
 
 interface DayViewProps {
   initialDate?: Date;
   onMonthClick?: () => void;
+  onWeekClick?: (weekStart: Date) => void;
 }
 
-export default function DayView({ initialDate, onMonthClick }: DayViewProps) {
-  const { selectedDate: contextDate, setSelectedDate, timeTableUnit } = useApp();
-  const selectedDate = initialDate || contextDate;
-  const [tasks, setTasks] = useState<DailyTask[]>([]);
+export function DayView({ initialDate, onMonthClick, onWeekClick }: DayViewProps) {
+  const [currentDate, setCurrentDate] = useState(initialDate || getToday());
   const [events, setEvents] = useState<Event[]>([]);
-  const [timeBlocks, setTimeBlocks] = useState<Event[]>([]);
-  const [newTaskContent, setNewTaskContent] = useState('');
-  const [isAddingTask, setIsAddingTask] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<Event | undefined>(undefined);
-  const [isTimeBlockModalOpen, setIsTimeBlockModalOpen] = useState(false);
-  const [editingTimeBlock, setEditingTimeBlock] = useState<Event | undefined>(undefined);
-  const [newBlockTime, setNewBlockTime] = useState<{ start: string; end: string } | null>(null);
-
-  // Load tasks and events when date changes
+  const [tasks, setTasks] = useState<DailyTask[]>([]);
+  const [commentElements, setCommentElements] = useState<CommentElement[]>([]);
+  const [monthlyMemo, setMonthlyMemo] = useState('');
+  const [weeklyMemo, setWeeklyMemo] = useState('');
+  const [checklistItems, setChecklistItems] = useState<WeeklyChecklistItem[]>([]);
+  
+  const dateStr = formatDate(currentDate);
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const day = currentDate.getDate();
+  
+  // Load data when date changes
   useEffect(() => {
-    loadData();
-  }, [selectedDate]);
-
-  const loadData = async () => {
-    setLoading(true);
-    const dateStr = formatDate(selectedDate);
-    const [fetchedTasks, fetchedEvents] = await Promise.all([
-      getTasksByDate(dateStr),
-      getEventsByDate(dateStr)
-    ]);
-    setTasks(fetchedTasks);
-    setEvents(fetchedEvents.filter(e => e.isAllDay)); // Only all-day events in Event section
-    setTimeBlocks(fetchedEvents.filter(e => e.isTimeTable)); // TimeTable blocks
-    setLoading(false);
-  };
-
-  const handleAddTask = async () => {
-    if (!newTaskContent.trim()) return;
-
-    const dateStr = formatDate(selectedDate);
-    const newTask = await addTask(dateStr, newTaskContent.trim());
+    // Load events
+    const dayEvents = getEventsByDate(dateStr);
+    setEvents(dayEvents);
     
-    if (newTask) {
-      setTasks([...tasks, newTask]);
-      setNewTaskContent('');
-      setIsAddingTask(false);
-    }
-  };
-
-  const handleToggleTask = async (taskId: string) => {
-    const success = await toggleTask(taskId);
-    if (success) {
-      setTasks(tasks.map(task => 
-        task.id === taskId 
-          ? { ...task, completed: !task.completed }
-          : task
-      ));
-    }
-  };
-
-  const handleDeleteTask = async (taskId: string) => {
-    const success = await deleteTask(taskId);
-    if (success) {
-      setTasks(tasks.filter(task => task.id !== taskId));
-    }
-  };
-
-  const handleUpdateTask = async (taskId: string, content: string) => {
-    const success = await updateTask(taskId, content);
-    if (success) {
-      setTasks(tasks.map(task =>
-        task.id === taskId
-          ? { ...task, content }
-          : task
-      ));
-    }
-  };
-
+    // Load tasks
+    const dayTasks = getDailyTasksByDate(dateStr);
+    setTasks(dayTasks);
+    
+    // Load comment
+    const comment = getDailyComment(dateStr);
+    setCommentElements(comment?.elements || []);
+    
+    // Load monthly memo
+    const mMemo = getMonthlyMemo(year, month);
+    setMonthlyMemo(mMemo?.content || '');
+    
+    // Load weekly memo
+    const weekStart = startOfWeek(currentDate);
+    const weekStartStr = formatDate(weekStart);
+    const wMemo = getWeeklyMemo(weekStartStr);
+    setWeeklyMemo(wMemo?.content || '');
+    
+    // Load checklist
+    const items = getWeeklyChecklistByWeek(weekStartStr);
+    setChecklistItems(items);
+  }, [dateStr, year, month, currentDate]);
+  
+  // Separate events for different sections
+  // Time Table: has startTime & endTime, not all-day
+  const timeTableEvents = events.filter(e => 
+    e.startTime && e.endTime && !e.isAllDay
+  );
+  // Regular Events: isAllDay or no time specified
+  const regularEvents = events.filter(e => 
+    e.isAllDay || (!e.startTime && !e.endTime)
+  );
+  
+  // Save comment with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const comment: DailyComment = {
+        date: dateStr,
+        elements: commentElements,
+      };
+      saveDailyComment(comment);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [commentElements, dateStr]);
+  
   const handlePrevDay = () => {
-    setSelectedDate(getPrevDay(selectedDate));
+    setCurrentDate(addDays(currentDate, -1));
   };
-
+  
   const handleNextDay = () => {
-    setSelectedDate(getNextDay(selectedDate));
+    setCurrentDate(addDays(currentDate, 1));
   };
-
-  const handleMonthClick = () => {
-    onMonthClick?.();
+  
+  // Task handlers
+  const handleTaskToggle = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      updateDailyTask(taskId, { completed: !task.completed });
+      setTasks(tasks.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t)));
+    }
   };
-
+  
+  const handleTaskAdd = (content: string, hour: number) => {
+    const newTask: DailyTask = {
+      id: Date.now().toString(),
+      date: dateStr,
+      content,
+      completed: false,
+      order: tasks.length,
+      hour, // hour is required for Task Section
+    };
+    addDailyTask(newTask);
+    setTasks([...tasks, newTask]);
+  };
+  
+  const handleTaskDelete = (taskId: string) => {
+    deleteDailyTask(taskId);
+    setTasks(tasks.filter((t) => t.id !== taskId));
+  };
+  
   // Event handlers
-  const handleAddEvent = async (title: string, color: string, description?: string) => {
-    const dateStr = formatDate(selectedDate);
-    const newEvent = await addEvent(dateStr, title, color, description, true, false);
+  const handleEventAdd = (eventData: Omit<Event, 'id' | 'date'>) => {
+    const allDayEventsCount = events.filter(e => e.isAllDay).length;
+    const newEvent: Event = {
+      id: Date.now().toString(),
+      date: dateStr,
+      ...eventData,
+      order: eventData.isAllDay ? allDayEventsCount : undefined,
+    };
+    addEvent(newEvent);
+    setEvents([...events, newEvent]);
+  };
+  
+  const handleEventUpdate = (eventId: string, updates: Partial<Event>) => {
+    updateEvent(eventId, updates);
+    setEvents(events.map((e) => (e.id === eventId ? { ...e, ...updates } : e)));
+  };
+  
+  const handleEventDelete = (eventId: string) => {
+    deleteEvent(eventId);
+    setEvents(events.filter((e) => e.id !== eventId));
+  };
+  
+  const handleEventReorder = (eventId: string, newOrder: number) => {
+    const allDayEvents = events.filter(e => e.isAllDay).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const draggedEvent = allDayEvents.find(e => e.id === eventId);
+    if (!draggedEvent) return;
     
-    if (newEvent) {
-      setEvents([...events, newEvent]);
-    }
-  };
-
-  const handleEditEvent = (event: Event) => {
-    setEditingEvent(event);
-    setIsEventModalOpen(true);
-  };
-
-  const handleUpdateEvent = async (title: string, color: string, description?: string) => {
-    if (!editingEvent) return;
+    const oldIndex = allDayEvents.findIndex(e => e.id === eventId);
+    const newEvents = [...allDayEvents];
+    newEvents.splice(oldIndex, 1);
+    newEvents.splice(newOrder, 0, draggedEvent);
     
-    const success = await updateEvent(editingEvent.id, { title, color, description });
-    if (success) {
-      setEvents(events.map(event =>
-        event.id === editingEvent.id
-          ? { ...event, title, color, description }
-          : event
-      ));
-      setEditingEvent(undefined);
-    }
-  };
-
-  const handleDeleteEvent = async (eventId: string) => {
-    const success = await deleteEvent(eventId);
-    if (success) {
-      setEvents(events.filter(event => event.id !== eventId));
-    }
-  };
-
-  const handleCloseEventModal = () => {
-    setIsEventModalOpen(false);
-    setEditingEvent(undefined);
-  };
-
-  // TimeBlock handlers
-  const handleBlockCreate = (startTime: string, endTime: string) => {
-    setNewBlockTime({ start: startTime, end: endTime });
-    setIsTimeBlockModalOpen(true);
-  };
-
-  const handleAddTimeBlock = async (title: string, color: string, startTime: string, endTime: string) => {
-    const dateStr = formatDate(selectedDate);
-    const newBlock = await addEvent(dateStr, title, color, undefined, false, true, startTime, endTime);
-    
-    if (newBlock) {
-      setTimeBlocks([...timeBlocks, newBlock]);
-    }
-  };
-
-  const handleBlockClick = (block: Event) => {
-    setEditingTimeBlock(block);
-    setIsTimeBlockModalOpen(true);
-  };
-
-  const handleUpdateTimeBlock = async (title: string, color: string, startTime: string, endTime: string) => {
-    if (!editingTimeBlock) return;
-    
-    const success = await updateEvent(editingTimeBlock.id, { 
-      title, 
-      color, 
-      start_time: startTime,
-      end_time: endTime 
+    // Update order for all events
+    newEvents.forEach((event, index) => {
+      updateEvent(event.id, { order: index });
     });
     
-    if (success) {
-      setTimeBlocks(timeBlocks.map(block =>
-        block.id === editingTimeBlock.id
-          ? { ...block, title, color, start_time: startTime, end_time: endTime }
-          : block
-      ));
-      setEditingTimeBlock(undefined);
+    // Update local state
+    setEvents(events.map(e => {
+      const updatedEvent = newEvents.find(ne => ne.id === e.id);
+      if (updatedEvent) {
+        return { ...e, order: newEvents.indexOf(updatedEvent) };
+      }
+      return e;
+    }));
+  };
+  
+  // Comment handlers
+  const handleElementAdd = (elementData: Omit<CommentElement, 'id'>) => {
+    const newElement: CommentElement = {
+      id: Date.now().toString(),
+      ...elementData,
+    };
+    setCommentElements([...commentElements, newElement]);
+  };
+  
+  const handleElementUpdate = (elementId: string, updates: Partial<CommentElement>) => {
+    setCommentElements(
+      commentElements.map((el) => (el.id === elementId ? { ...el, ...updates } : el))
+    );
+  };
+  
+  const handleElementDelete = (elementId: string) => {
+    setCommentElements(commentElements.filter((el) => el.id !== elementId));
+  };
+  
+  // Checklist handler
+  const handleChecklistToggle = (itemId: string) => {
+    const item = checklistItems.find((i) => i.id === itemId);
+    if (item) {
+      updateWeeklyChecklistItem(itemId, { completed: !item.completed });
+      setChecklistItems(
+        checklistItems.map((i) => (i.id === itemId ? { ...i, completed: !i.completed } : i))
+      );
     }
   };
-
-  const handleDeleteTimeBlock = async () => {
-    if (!editingTimeBlock) return;
-    
-    const success = await deleteEvent(editingTimeBlock.id);
-    if (success) {
-      setTimeBlocks(timeBlocks.filter(block => block.id !== editingTimeBlock.id));
-      setEditingTimeBlock(undefined);
-    }
+  
+  const handleDateClick = (date: Date) => {
+    setCurrentDate(date);
   };
-
-  // Future feature: Block move functionality
-  // const handleBlockMove = async (blockId: string, newStartTime: string, newEndTime: string) => {
-  //   const success = await updateEvent(blockId, { 
-  //     start_time: newStartTime,
-  //     end_time: newEndTime 
-  //   });
-  //   
-  //   if (success) {
-  //     setTimeBlocks(timeBlocks.map(block =>
-  //       block.id === blockId
-  //         ? { ...block, start_time: newStartTime, end_time: newEndTime }
-  //         : block
-  //     ));
-  //   }
-  // };
-
-  const handleCloseTimeBlockModal = () => {
-    setIsTimeBlockModalOpen(false);
-    setEditingTimeBlock(undefined);
-    setNewBlockTime(null);
-  };
-
+  
+  const prevDay = addDays(currentDate, -1).getDate();
+  const nextDay = addDays(currentDate, 1).getDate();
+  
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      {/* Navigation Bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-center gap-4">
-          <button 
-            onClick={handlePrevDay}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            ←
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-400">{formatDay(getPrevDay(selectedDate))}일</span>
-            <span className="text-2xl font-bold">{formatDay(selectedDate)}일</span>
-            <span className="text-gray-400">{formatDay(getNextDay(selectedDate))}일</span>
-          </div>
-          <button 
-            onClick={handleNextDay}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            →
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
+    <div className="h-screen flex flex-col">
+      <NavigationBar
+        currentLabel={`${day}일`}
+        prevLabel={`${prevDay}일`}
+        nextLabel={`${nextDay}일`}
+        onPrev={handlePrevDay}
+        onNext={handleNextDay}
+        onPrevLabelClick={handlePrevDay}
+        onNextLabelClick={handleNextDay}
+        rightButtons={
+          <>
+            <Button variant="outline" size="sm" onClick={onMonthClick}>
+              월보기
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onWeekClick?.(startOfWeek(currentDate))}
+            >
+              주보기
+            </Button>
+          </>
+        }
+      />
+      
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-          <button 
-            onClick={handleMonthClick}
-            className="text-blue-600 hover:underline mb-4"
-          >
-            {selectedDate.getMonth() + 1}월
-          </button>
-          <div className="text-sm text-gray-500">
-            Mini Calendar (TODO)
+        <DailySidebar
+          currentDate={currentDate}
+          monthlyMemo={monthlyMemo}
+          weeklyMemo={weeklyMemo}
+          checklistItems={checklistItems}
+          onChecklistToggle={handleChecklistToggle}
+          onMonthClick={onMonthClick}
+          onWeekClick={onWeekClick}
+          onDateClick={handleDateClick}
+        />
+        
+        {/* Main Content - 3 Columns */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 overflow-auto">
+          {/* Task Column */}
+          <div className="h-full min-h-[500px]">
+            <TaskSection
+              tasks={tasks}
+              onTaskToggle={handleTaskToggle}
+              onTaskAdd={handleTaskAdd}
+              onTaskDelete={handleTaskDelete}
+            />
           </div>
-        </div>
-
-        {/* Task Section */}
-        <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-          <h3 className="font-semibold mb-4">Task</h3>
           
-          {loading ? (
-            <div className="text-sm text-gray-400">로딩 중...</div>
-          ) : (
-            <>
-              {/* Task List */}
-              <div className="space-y-1 mb-4">
-                {tasks.map(task => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onToggle={handleToggleTask}
-                    onDelete={handleDeleteTask}
-                    onUpdate={handleUpdateTask}
-                  />
-                ))}
-              </div>
-
-              {/* Add Task */}
-              {isAddingTask ? (
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newTaskContent}
-                    onChange={(e) => setNewTaskContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleAddTask();
-                      if (e.key === 'Escape') {
-                        setIsAddingTask(false);
-                        setNewTaskContent('');
-                      }
-                    }}
-                    placeholder="할 일 입력..."
-                    className="flex-1 px-2 py-1 text-sm border border-blue-500 rounded focus:outline-none"
-                    autoFocus
-                  />
-                  <button
-                    onClick={handleAddTask}
-                    className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    추가
-                  </button>
-                </div>
-              ) : (
-                <button 
-                  onClick={() => setIsAddingTask(true)}
-                  className="w-full text-left text-sm text-gray-400 hover:text-gray-600"
-                >
-                  + 할 일 추가
-                </button>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* TimeTable Section */}
-        <div className="flex-1 bg-white border-r border-gray-200 overflow-y-auto">
-          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">
-            <h3 className="font-semibold">Time Table</h3>
+          {/* Time Table Column */}
+          <div className="h-full min-h-[500px]">
+            <TimeTableSection
+              events={timeTableEvents}
+              onEventAdd={handleEventAdd}
+              onEventUpdate={handleEventUpdate}
+              onEventDelete={handleEventDelete}
+            />
           </div>
-          <div className="p-4">
-            {loading ? (
-              <div className="text-sm text-gray-400">로딩 중...</div>
-            ) : (
-              <TimeTableGrid
-                unit={timeTableUnit}
-                blocks={timeBlocks}
-                onBlockCreate={handleBlockCreate}
-                onBlockClick={handleBlockClick}
+          
+          {/* Event + Comment Column (Stacked) */}
+          <div className="h-full min-h-[500px] flex flex-col gap-4">
+            {/* Event Section (Top Half) */}
+            <div className="flex-1 min-h-[240px]">
+              <EventSection
+                events={regularEvents}
+                onEventDelete={handleEventDelete}
+                onEventReorder={handleEventReorder}
               />
-            )}
-          </div>
-        </div>
-
-        {/* Event Section */}
-        <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-          <h3 className="font-semibold mb-4">Event</h3>
-          
-          {loading ? (
-            <div className="text-sm text-gray-400">로딩 중...</div>
-          ) : (
-            <>
-              {/* Event List */}
-              <div className="space-y-1 mb-4">
-                {events.map(event => (
-                  <EventItem
-                    key={event.id}
-                    event={event}
-                    onEdit={handleEditEvent}
-                    onDelete={handleDeleteEvent}
-                  />
-                ))}
-              </div>
-
-              {/* Add Event */}
-              <button 
-                onClick={() => setIsEventModalOpen(true)}
-                className="w-full text-left text-sm text-gray-400 hover:text-gray-600"
-              >
-                + 추가
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* Comment Section */}
-        <div className="flex-1 bg-white p-4 overflow-y-auto">
-          <h3 className="font-semibold mb-4">Comment</h3>
-          <div className="text-sm text-gray-500">
-            Comment Canvas (TODO)
+            </div>
+            
+            {/* Comment Section (Bottom Half) */}
+            <div className="flex-1 min-h-[240px]">
+              <CommentSection
+                elements={commentElements}
+                onElementAdd={handleElementAdd}
+                onElementUpdate={handleElementUpdate}
+                onElementDelete={handleElementDelete}
+              />
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Event Modal */}
-      <EventModal
-        isOpen={isEventModalOpen}
-        onClose={handleCloseEventModal}
-        onSave={editingEvent ? handleUpdateEvent : handleAddEvent}
-        event={editingEvent}
-      />
-
-      {/* TimeBlock Modal */}
-      <TimeBlockModal
-        isOpen={isTimeBlockModalOpen}
-        onClose={handleCloseTimeBlockModal}
-        onSave={editingTimeBlock ? handleUpdateTimeBlock : handleAddTimeBlock}
-        onDelete={editingTimeBlock ? handleDeleteTimeBlock : undefined}
-        block={editingTimeBlock}
-        initialStartTime={newBlockTime?.start}
-        initialEndTime={newBlockTime?.end}
-      />
     </div>
   );
 }

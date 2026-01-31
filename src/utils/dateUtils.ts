@@ -1,14 +1,18 @@
 import { 
   format, 
   startOfWeek,
+  endOfWeek as dateFnsEndOfWeek,
   isSameMonth,
   isSameDay,
   addMonths,
   subMonths,
-  addDays,
+  addDays as dateFnsAddDays,
   subDays
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
+
+// Re-export commonly used date-fns functions
+export { dateFnsAddDays as addDays };
 
 // Get today's date
 export const getToday = (): Date => {
@@ -20,9 +24,14 @@ export const formatDate = (date: Date): string => {
   return format(date, 'yyyy-MM-dd');
 };
 
-// Get month name (e.g., "1월", "2월")
-export const getMonthName = (month: number): string => {
-  return `${month + 1}월`;
+// Get month name (e.g., "1월", "2월") with locale support
+export const getMonthName = (month: number, locale: string = 'ko-KR'): string => {
+  if (locale === 'ko-KR') {
+    return `${month + 1}월`;
+  }
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  return monthNames[month];
 };
 
 // Format date to display string (e.g., "2026년 1월")
@@ -114,7 +123,7 @@ export const isSaturday = (date: Date): boolean => {
 // Navigation helpers
 export const getNextMonth = (date: Date): Date => addMonths(date, 1);
 export const getPrevMonth = (date: Date): Date => subMonths(date, 1);
-export const getNextDay = (date: Date): Date => addDays(date, 1);
+export const getNextDay = (date: Date): Date => dateFnsAddDays(date, 1);
 export const getPrevDay = (date: Date): Date => subDays(date, 1);
 
 // Export addMonths and startOfWeek for external use
@@ -129,7 +138,36 @@ export const getWeekStart = (date: Date, weekStartsOn: 0 | 1 = 0): Date => {
 export const getWeekDaysDates = (weekStart: Date): Date[] => {
   const days: Date[] = [];
   for (let i = 0; i < 7; i++) {
-    days.push(addDays(weekStart, i));
+    days.push(dateFnsAddDays(weekStart, i));
   }
   return days;
+};
+
+// Get end of week
+export const endOfWeek = (date: Date, weekStartsOn: 0 | 1 = 0): Date => {
+  return dateFnsEndOfWeek(date, { weekStartsOn });
+};
+
+// Format week range (e.g., "1/25-31" or "1/25-2/1")
+export const formatWeekRange = (weekStart: Date, weekEnd: Date): string => {
+  const startMonth = weekStart.getMonth() + 1;
+  const startDay = weekStart.getDate();
+  const endMonth = weekEnd.getMonth() + 1;
+  const endDay = weekEnd.getDate();
+  
+  if (startMonth === endMonth) {
+    return `${startMonth}/${startDay}-${endDay}`;
+  } else {
+    return `${startMonth}/${startDay}-${endMonth}/${endDay}`;
+  }
+};
+
+// Get days in month
+export const getDaysInMonth = (year: number, month: number): number => {
+  return new Date(year, month + 1, 0).getDate();
+};
+
+// Get first day of month (0 = Sunday, 6 = Saturday)
+export const getFirstDayOfMonth = (year: number, month: number): number => {
+  return new Date(year, month, 1).getDay();
 };

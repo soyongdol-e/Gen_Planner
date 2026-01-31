@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { MonthView } from "./components/MonthView";
-import YearView from "./components/views/YearView";
-import WeekView from "./components/views/WeekView";
-import DayView from "./components/views/DayView";
+import { YearView } from "./components/views/YearView";
+import { WeekView } from "./components/views/WeekView";
+import { DayView } from "./components/views/DayView";
 import type { ViewType } from "./types";
 import { initializeSampleData } from "./utils/sampleData";
 
@@ -65,6 +65,7 @@ export default function App() {
         <DayView
           initialDate={selectedDate}
           onMonthClick={() => handleMonthClick()}
+          onWeekClick={handleWeekClick}
         />
       )}
     </div>

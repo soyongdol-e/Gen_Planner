@@ -1,13 +1,33 @@
 import { useState, useEffect } from 'react';
-import { useApp } from '../../contexts/AppContext';
-import { 
-  formatDate, 
-  formatDay,
-  getWeekStart,
-  getWeekDaysDates
+import { Textarea } from '../ui/textarea';
+import { Trash2 } from 'lucide-react';
+import { NavigationBar } from '../NavigationBar';
+import { WeeklySidebar } from '../WeeklySidebar';
+import type { Event, WeeklyMemo, WeeklyChecklistItem, DailyTask } from '../../types';
+import {
+  startOfWeek,
+  endOfWeek,
+  addDays,
+  formatDate,
+  formatWeekRange,
+  getToday,
 } from '../../utils/dateUtils';
-
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+import {
+  getEvents,
+  getWeeklyMemo,
+  saveWeeklyMemo,
+  getWeeklyChecklistByWeek,
+  addWeeklyChecklistItem,
+  updateWeeklyChecklistItem,
+  deleteWeeklyChecklistItem,
+  getMonthlyMemo,
+  getDailyTasks,
+  updateEvent,
+  deleteEvent,
+  updateDailyTask,
+  deleteDailyTask,
+} from '../../utils/storage';
+import { cn } from '../ui/utils';
 
 interface WeekViewProps {
   initialDate?: Date;
@@ -15,134 +35,447 @@ interface WeekViewProps {
   onDayClick?: (date: Date) => void;
 }
 
-export default function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProps) {
-  const { selectedDate: contextDate, setSelectedDate, weekStartsOn } = useApp();
-  const selectedDate = initialDate || contextDate;
-  const [weekStart, setWeekStart] = useState<Date>(getWeekStart(selectedDate, weekStartsOn));
-  const [weekDays, setWeekDays] = useState<Date[]>(getWeekDaysDates(weekStart));
+export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProps) {
+  const [currentWeekStart, setCurrentWeekStart] = useState(
+    startOfWeek(initialDate || getToday())
+  );
+  const [events, setEvents] = useState<Event[]>([]);
+  const [weeklyMemo, setWeeklyMemo] = useState('');
+  const [monthlyMemo, setMonthlyMemo] = useState('');
+  const [checklistItems, setChecklistItems] = useState<WeeklyChecklistItem[]>([]);
+  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([]);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingEventTitle, setEditingEventTitle] = useState('');
+  const [editingTaskContent, setEditingTaskContent] = useState('');
 
-  // Update week when selectedDate changes
+  const weekEnd = endOfWeek(currentWeekStart);
+  const weekStartStr = formatDate(currentWeekStart);
+
+  // Load data when week changes
   useEffect(() => {
-    const newWeekStart = getWeekStart(selectedDate, weekStartsOn);
-    setWeekStart(newWeekStart);
-    setWeekDays(getWeekDaysDates(newWeekStart));
-  }, [selectedDate, weekStartsOn]);
+    // Load events - use string comparison for dates
+    const allEvents = getEvents();
+    const weekStartStr = formatDate(currentWeekStart);
+    const weekEndStr = formatDate(weekEnd);
+
+    const weekEvents = allEvents.filter((event) => {
+      return event.date >= weekStartStr && event.date <= weekEndStr;
+    });
+    setEvents(weekEvents);
+
+    // Load weekly memo
+    const memo = getWeeklyMemo(weekStartStr);
+    setWeeklyMemo(memo?.content || '');
+
+    // Load monthly memo
+    const year = currentWeekStart.getFullYear();
+    const month = currentWeekStart.getMonth();
+    const mMemo = getMonthlyMemo(year, month);
+    setMonthlyMemo(mMemo?.content || '');
+
+    // Load checklist
+    const items = getWeeklyChecklistByWeek(weekStartStr);
+    setChecklistItems(items);
+
+    // Load daily tasks for the week
+    const allTasks = getDailyTasks();
+    const weekTasks = allTasks.filter((task) => {
+      return task.date >= weekStartStr && task.date <= weekEndStr;
+    });
+    setDailyTasks(weekTasks);
+  }, [weekStartStr]);
+
+  // Save weekly memo with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const memo: WeeklyMemo = {
+        weekStart: weekStartStr,
+        content: weeklyMemo,
+      };
+      saveWeeklyMemo(memo);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [weeklyMemo, weekStartStr]);
 
   const handlePrevWeek = () => {
-    const newDate = new Date(weekStart);
-    newDate.setDate(newDate.getDate() - 7);
-    setSelectedDate(newDate);
+    setCurrentWeekStart(addDays(currentWeekStart, -7));
   };
 
   const handleNextWeek = () => {
-    const newDate = new Date(weekStart);
-    newDate.setDate(newDate.getDate() + 7);
-    setSelectedDate(newDate);
+    setCurrentWeekStart(addDays(currentWeekStart, 7));
   };
 
-  const handleMonthClick = () => {
-    onMonthClick?.();
-  };
-
-  const handleDayClick = (date: Date) => {
-    onDayClick?.(date);
-  };
-
-  // Format week range for display
-  const formatWeekRange = () => {
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    const startMonth = weekStart.getMonth() + 1;
-    const startDay = weekStart.getDate();
-    const endMonth = weekEnd.getMonth() + 1;
-    const endDay = weekEnd.getDate();
-    
-    if (startMonth === endMonth) {
-      return `${startMonth}/${startDay}-${endDay}`;
-    } else {
-      return `${startMonth}/${startDay}-${endMonth}/${endDay}`;
+  const handleChecklistToggle = (itemId: string) => {
+    const item = checklistItems.find((i) => i.id === itemId);
+    if (item) {
+      updateWeeklyChecklistItem(itemId, { completed: !item.completed });
+      setChecklistItems(
+        checklistItems.map((i) =>
+          i.id === itemId ? { ...i, completed: !i.completed } : i
+        )
+      );
     }
   };
 
-  return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      {/* Navigation Bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={handleMonthClick}
-            className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            월 달력
-          </button>
-          
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handlePrevWeek}
-              className="text-gray-600 hover:text-gray-900 text-xl"
-            >
-              ←
-            </button>
-            <span className="text-xl font-bold">
-              {formatWeekRange()}
-            </span>
-            <button
-              onClick={handleNextWeek}
-              className="text-gray-600 hover:text-gray-900 text-xl"
-            >
-              →
-            </button>
-          </div>
-          
-          <div className="w-24"></div>
-        </div>
-      </div>
+  const handleChecklistAdd = (content: string) => {
+    const newItem: WeeklyChecklistItem = {
+      id: Date.now().toString(),
+      weekStart: weekStartStr,
+      content,
+      completed: false,
+      order: checklistItems.length,
+    };
+    addWeeklyChecklistItem(newItem);
+    setChecklistItems([...checklistItems, newItem]);
+  };
 
-      {/* Week Content */}
-      <div className="flex-1 p-6 overflow-auto">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          {/* Week Days Grid */}
-          <div className="grid grid-cols-7 gap-4">
-            {weekDays.map((day, index) => {
-              const isToday = formatDate(day) === formatDate(new Date());
-              const dayOfWeek = day.getDay();
-              
-              return (
-                <div
-                  key={index}
-                  onClick={() => handleDayClick(day)}
-                  className={`p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
-                    isToday ? 'bg-blue-50 border-2 border-blue-500' : 'border border-gray-200'
-                  }`}
-                >
-                  <div className={`text-xs mb-1 ${
-                    dayOfWeek === 0 ? 'text-red-500' : 
-                    dayOfWeek === 6 ? 'text-blue-500' : 
-                    'text-gray-600'
-                  }`}>
-                    {WEEKDAYS[dayOfWeek]}
+  const handleChecklistDelete = (itemId: string) => {
+    deleteWeeklyChecklistItem(itemId);
+    setChecklistItems(checklistItems.filter((i) => i.id !== itemId));
+  };
+
+  const handleWeekClick = (weekStart: Date) => {
+    setCurrentWeekStart(weekStart);
+  };
+
+  // Generate week days
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
+  const today = getToday();
+
+  const currentLabel = formatWeekRange(currentWeekStart, weekEnd);
+  const prevWeekStart = addDays(currentWeekStart, -7);
+  const prevWeekEnd = endOfWeek(prevWeekStart);
+  const nextWeekStart = addDays(currentWeekStart, 7);
+  const nextWeekEnd = endOfWeek(nextWeekStart);
+
+  const prevLabel = formatWeekRange(prevWeekStart, prevWeekEnd);
+  const nextLabel = formatWeekRange(nextWeekStart, nextWeekEnd);
+
+  const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+
+  return (
+    <div className="h-screen flex flex-col">
+      <NavigationBar
+        currentLabel={currentLabel}
+        prevLabel={prevLabel}
+        nextLabel={nextLabel}
+        onPrev={handlePrevWeek}
+        onNext={handleNextWeek}
+        onPrevLabelClick={handlePrevWeek}
+        onNextLabelClick={handleNextWeek}
+      />
+
+      <div className="flex-1 flex overflow-hidden">
+        <WeeklySidebar
+          weekStart={currentWeekStart}
+          monthlyMemo={monthlyMemo}
+          checklistItems={checklistItems}
+          onChecklistToggle={handleChecklistToggle}
+          onChecklistAdd={handleChecklistAdd}
+          onChecklistDelete={handleChecklistDelete}
+          onMonthClick={onMonthClick}
+          onWeekClick={handleWeekClick}
+        />
+
+        {/* Week Calendar */}
+        <div className="flex-1 p-4 md:p-6 overflow-auto flex flex-col gap-4">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* Day Headers */}
+            <div className="grid grid-cols-7 border-b">
+              {weekDays.map((day, idx) => {
+                const isToday = formatDate(day) === formatDate(today);
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => onDayClick?.(day)}
+                    className={cn(
+                      'border-r last:border-r-0 p-3 hover:bg-gray-50 transition-colors',
+                      isToday && 'bg-teal-50'
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        'text-xs font-medium',
+                        idx === 0 && 'text-red-500',
+                        idx === 6 && 'text-blue-500',
+                        idx > 0 && idx < 6 && 'text-gray-600'
+                      )}
+                    >
+                      {dayNames[idx]}
+                    </div>
+                    <div
+                      className={cn(
+                        'text-lg font-semibold mt-1',
+                        isToday && 'text-teal-600',
+                        !isToday && idx === 0 && 'text-red-500',
+                        !isToday && idx === 6 && 'text-blue-500'
+                      )}
+                    >
+                      {day.getMonth() + 1}월 {day.getDate()}일
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Day Columns */}
+            <div className="grid grid-cols-7 min-h-[500px]">
+              {weekDays.map((day, idx) => {
+                const dayStr = formatDate(day);
+                // Filter events for this day (exclude Time Table events)
+                const dayEvents = events.filter((e) => {
+                  if (e.date !== dayStr) return false;
+                  // Exclude Time Table events (has startTime & endTime, not all-day)
+                  if (e.startTime && e.endTime && !e.isAllDay) return false;
+                  return true;
+                });
+
+                // Filter tasks for this day
+                const dayTasks = dailyTasks.filter((t) => t.date === dayStr);
+
+                const isToday = dayStr === formatDate(today);
+
+                return (
+                  <div
+                    key={idx}
+                    className={cn(
+                      'border-r last:border-r-0 p-2 relative group',
+                      isToday && 'bg-teal-50/30'
+                    )}
+                  >
+                    {/* Background button for day click */}
+                    <button
+                      onClick={() => onDayClick?.(day)}
+                      className="absolute inset-0 hover:bg-gray-50 transition-colors"
+                    />
+
+                    {/* Content (above the button) */}
+                    <div className="relative z-10">
+                      {/* Daily Memo Area */}
+                      <div className="mb-3 min-h-[40px] text-xs text-gray-500 italic pointer-events-none">
+                        {/* Placeholder for daily memo */}
+                      </div>
+
+                      {/* Event Blocks */}
+                      <div className="space-y-1">
+                        {dayEvents.map((event) => {
+                          const eventColor = event.color || '#ec4899';
+                          const isEditing = editingEventId === event.id;
+
+                          if (isEditing) {
+                            return (
+                              <div
+                                key={event.id}
+                                className="rounded p-2 text-xs bg-white border-2 border-pink-500"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {event.startTime && (
+                                  <div className="font-medium text-[10px] text-gray-500 mb-0.5">
+                                    {event.startTime}
+                                    {event.endTime && ` - ${event.endTime}`}
+                                  </div>
+                                )}
+                                <div className="flex items-center gap-1 w-full">
+                                  <input
+                                    type="text"
+                                    value={editingEventTitle}
+                                    onChange={(e) => setEditingEventTitle(e.target.value)}
+                                    onBlur={() => {
+                                      if (editingEventTitle.trim()) {
+                                        updateEvent(event.id, { title: editingEventTitle });
+                                        setEvents(
+                                          events.map((e) =>
+                                            e.id === event.id ? { ...e, title: editingEventTitle } : e
+                                          )
+                                        );
+                                      }
+                                      setEditingEventId(null);
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.currentTarget.blur();
+                                      }
+                                      if (e.key === 'Escape') {
+                                        setEditingEventId(null);
+                                      }
+                                    }}
+                                    autoFocus
+                                    className="flex-1 min-w-0 px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                  />
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      deleteEvent(event.id);
+                                      setEvents(events.filter((e) => e.id !== event.id));
+                                      setEditingEventId(null);
+                                    }}
+                                    className="p-1 hover:bg-gray-100 rounded flex-shrink-0"
+                                    title="삭제"
+                                  >
+                                    <Trash2 className="w-3 h-3 text-red-500" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <button
+                              key={event.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingEventId(event.id);
+                                setEditingEventTitle(event.title);
+                              }}
+                              className="w-full text-left rounded p-2 text-xs hover:opacity-80 transition-opacity"
+                              style={{
+                                backgroundColor: eventColor,
+                                color: 'white',
+                              }}
+                            >
+                              {event.startTime && (
+                                <div className="font-medium text-[10px] opacity-90 mb-0.5">
+                                  {event.startTime}
+                                  {event.endTime && ` - ${event.endTime}`}
+                                </div>
+                              )}
+                              <div className="font-semibold truncate">
+                                {event.title}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Task Blocks */}
+                      <div className="space-y-1">
+                        {dayTasks.map((task) => {
+                          const isEditing = editingTaskId === task.id;
+
+                          if (isEditing) {
+                            return (
+                              <div
+                                key={task.id}
+                                className="rounded p-2 text-xs bg-white border-2 border-green-500"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="flex items-center gap-1 w-full">
+                                  <input
+                                    type="checkbox"
+                                    checked={task.completed}
+                                    onChange={(e) => {
+                                      e.stopPropagation();
+                                      updateDailyTask(task.id, { completed: !task.completed });
+                                      setDailyTasks(
+                                        dailyTasks.map((t) =>
+                                          t.id === task.id ? { ...t, completed: !task.completed } : t
+                                        )
+                                      );
+                                    }}
+                                    className="mt-0.5 flex-shrink-0"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={editingTaskContent}
+                                    onChange={(e) => setEditingTaskContent(e.target.value)}
+                                    onBlur={() => {
+                                      if (editingTaskContent.trim()) {
+                                        updateDailyTask(task.id, { content: editingTaskContent });
+                                        setDailyTasks(
+                                          dailyTasks.map((t) =>
+                                            t.id === task.id ? { ...t, content: editingTaskContent } : t
+                                          )
+                                        );
+                                      }
+                                      setEditingTaskId(null);
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.currentTarget.blur();
+                                      }
+                                      if (e.key === 'Escape') {
+                                        setEditingTaskId(null);
+                                      }
+                                    }}
+                                    autoFocus
+                                    className="flex-1 min-w-0 px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                                  />
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      deleteDailyTask(task.id);
+                                      setDailyTasks(dailyTasks.filter((t) => t.id !== task.id));
+                                      setEditingTaskId(null);
+                                    }}
+                                    className="p-1 hover:bg-gray-100 rounded flex-shrink-0"
+                                    title="삭제"
+                                  >
+                                    <Trash2 className="w-3 h-3 text-red-500" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div
+                              key={task.id}
+                              className="rounded p-2 text-xs"
+                              style={{
+                                backgroundColor: '#10b981',
+                                color: 'white',
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="flex items-start gap-1">
+                                <input
+                                  type="checkbox"
+                                  checked={task.completed}
+                                  onChange={(e) => {
+                                    e.stopPropagation();
+                                    updateDailyTask(task.id, { completed: !task.completed });
+                                    setDailyTasks(
+                                      dailyTasks.map((t) =>
+                                        t.id === task.id ? { ...t, completed: !task.completed } : t
+                                      )
+                                    );
+                                  }}
+                                  className="mt-0.5 cursor-pointer"
+                                />
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingTaskId(task.id);
+                                    setEditingTaskContent(task.content);
+                                  }}
+                                  className="flex-1 text-left hover:opacity-80 transition-opacity"
+                                >
+                                  <div className="font-semibold truncate">
+                                    {task.content}
+                                  </div>
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
-                  <div className={`text-2xl font-semibold ${
-                    isToday ? 'text-blue-600' : 'text-gray-900'
-                  }`}>
-                    {formatDay(day)}
-                  </div>
-                  
-                  {/* Placeholder for events */}
-                  <div className="mt-4 space-y-1">
-                    <div className="text-xs text-gray-400">일정 표시 예정</div>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-          
-          {/* Weekly Memo */}
-          <div className="mt-6">
-            <h3 className="font-semibold mb-2">Weekly Memo</h3>
-            <textarea
-              placeholder="이번 주 메모..."
-              className="w-full h-32 p-3 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+
+          {/* Weekly Memo - Below Week Calendar */}
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <h3 className="font-semibold text-sm mb-3">Weekly Memo</h3>
+            <Textarea
+              value={weeklyMemo}
+              onChange={(e) => setWeeklyMemo(e.target.value)}
+              placeholder="이번 주 메모를 작성하세요..."
+              className="text-sm min-h-[120px] resize-none"
             />
           </div>
         </div>
