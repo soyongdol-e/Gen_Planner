@@ -41,12 +41,14 @@
 - **WeeklySidebar**:
   - Monthly Memo (읽기 전용)
   - Weekly Checklist (체크박스 항목)
-  - Mini Calendar (월 달력)
+  - Mini Calendar (날짜 클릭 시 해당 주로 이동, 일요일 시작 고정)
 - **7일 컬럼 레이아웃**:
   - 각 날짜별 이벤트 (All-Day Events)
   - 각 날짜별 Task (Daily Tasks)
   - 인라인 편집 (제목 클릭)
   - 삭제 버튼
+  - **호버 시 + 버튼으로 이벤트 추가** ✨ NEW!
+  - 날짜 영역 클릭으로 Day View 이동
 - **Weekly Memo** (하단, 자동 저장)
 
 #### 4. **Day View (일 달력)** ✅
