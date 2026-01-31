@@ -85,30 +85,37 @@ export function YearView({ onMonthClick }: YearViewProps) {
     }
     
     return (
-      <button
+      <div
         onClick={() => onMonthClick?.(currentYear, month)}
-        className="w-[350px] h-[220px] text-left flex flex-col"
+        className="w-[350px] h-[240px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
       >
-        <h3 className="text-heading-sm mb-6 text-center font-bold text-gray-900">
+        {/* Month Title - 24px, Pretendard 700, #111111 */}
+        <h3 className="text-[24px] font-bold leading-[150%] mb-2" style={{ color: '#111111' }}>
           {month + 1}월
         </h3>
-        <div className="grid grid-cols-7 gap-2">
-          {/* Week day headers - abbreviated */}
+        
+        {/* Week day headers - 17px, Pretendard 500 */}
+        <div className="grid grid-cols-7 gap-x-2 mb-[3px]">
           {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
             <div
               key={day}
               className={cn(
-                'text-body-sm text-center font-medium mb-2',
+                'text-[17px] font-medium leading-[150%] text-center',
                 idx === 0 && 'text-[#FF5B45]',
                 idx === 6 && 'text-[#358BFB]',
-                idx > 0 && idx < 6 && 'text-gray-500'
+                idx > 0 && idx < 6 && 'text-[#505050]'
               )}
             >
               {day}
             </div>
           ))}
-          
-          {/* Calendar days */}
+        </div>
+        
+        {/* Divider Line - 350px width, 2px thickness, rounded ends, #E2E2E2 */}
+        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[6px]" />
+        
+        {/* Calendar days - 17px, Pretendard 600, 6px vertical gap between weeks */}
+        <div className="grid grid-cols-7 gap-x-2 gap-y-[6px]">
           {days.map((day, idx) => {
             const isToday = isSameDay(day.date, today);
             const hasEvents = getEventsForDate(day.date).length > 0;
@@ -117,12 +124,13 @@ export function YearView({ onMonthClick }: YearViewProps) {
               <div
                 key={idx}
                 className={cn(
-                  'text-body-sm text-center py-2 rounded-full transition-colors',
-                  isToday && 'bg-black text-white font-bold',
-                  !isToday && day.isCurrentMonth && 'text-gray-900 hover:bg-gray-50',
+                  'text-[17px] font-semibold leading-[150%] text-center',
+                  isToday && 'bg-black text-white rounded-full',
+                  !isToday && day.isCurrentMonth && 'text-gray-900',
                   !isToday && !day.isCurrentMonth && 'text-gray-300',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 0 && 'text-[#FF5B45]',
-                  !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]'
+                  !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]',
+                  !isToday && day.isCurrentMonth && day.date.getDay() > 0 && day.date.getDay() < 6 && 'text-[#505050]'
                 )}
               >
                 {day.date.getDate()}
@@ -133,7 +141,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
             );
           })}
         </div>
-      </button>
+      </div>
     );
   };
   
