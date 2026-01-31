@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import type { WeeklyChecklistItem } from '../types';
-import { getMonthName, formatDate } from '../utils/dateUtils';
+import { getMonthName, formatDate, getWeekStart } from '../utils/dateUtils';
 import { cn } from './ui/utils';
 
 interface WeeklySidebarProps {
@@ -139,7 +139,11 @@ export function WeeklySidebar({
           {miniDays.map((day, idx) => (
             <button
               key={idx}
-              onClick={() => onWeekClick?.(day.date)}
+              onClick={() => {
+                // Always navigate to the Sunday of the week containing the clicked date
+                const weekStartDate = getWeekStart(day.date, 0); // 0 = Sunday
+                onWeekClick?.(weekStartDate);
+              }}
               className={cn(
                 'text-xs text-center py-1 rounded hover:bg-gray-100',
                 isWeekStartDate(day.date) && 'bg-teal-500 text-white hover:bg-teal-600',
