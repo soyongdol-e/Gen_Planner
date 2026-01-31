@@ -87,13 +87,10 @@ export function YearView({ onMonthClick }: YearViewProps) {
     return (
       <button
         onClick={() => onMonthClick?.(currentYear, month)}
-        className="w-full text-left"
+        className="w-[350px] h-[220px] text-left flex flex-col"
       >
-        <h3 className="text-heading-md mb-6 text-center font-bold text-gray-900 tracking-wide uppercase">
-          {[
-            'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
-            'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
-          ][month]}
+        <h3 className="text-heading-sm mb-6 text-center font-bold text-gray-900">
+          {month + 1}월
         </h3>
         <div className="grid grid-cols-7 gap-2">
           {/* Week day headers - abbreviated */}
@@ -180,7 +177,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
       {/* 12 Month Grid */}
       <div className="flex-1 overflow-auto px-[192px] py-12">
         <div className="max-w-[1920px] mx-auto">
-          <div className="grid grid-cols-3 gap-x-16 gap-y-20">
+          <div className="grid grid-cols-4 gap-x-[44px] gap-y-[55px]">
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i}>
                 {renderMiniMonth(i)}
