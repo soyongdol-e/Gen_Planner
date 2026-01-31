@@ -316,15 +316,20 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                                     value={editingEventTitle}
                                     onChange={(e) => setEditingEventTitle(e.target.value)}
                                     onBlur={() => {
-                                      if (editingEventTitle.trim()) {
-                                        updateEvent(event.id, { title: editingEventTitle });
-                                        setEvents(
-                                          events.map((e) =>
-                                            e.id === event.id ? { ...e, title: editingEventTitle } : e
-                                          )
-                                        );
-                                      }
-                                      setEditingEventId(null);
+                                      // Delay to allow delete button click to register first
+                                      setTimeout(() => {
+                                        if (editingEventId === event.id) {
+                                          if (editingEventTitle.trim()) {
+                                            updateEvent(event.id, { title: editingEventTitle });
+                                            setEvents(
+                                              events.map((e) =>
+                                                e.id === event.id ? { ...e, title: editingEventTitle } : e
+                                              )
+                                            );
+                                          }
+                                          setEditingEventId(null);
+                                        }
+                                      }, 100);
                                     }}
                                     onKeyDown={(e) => {
                                       if (e.key === 'Enter') {
@@ -338,6 +343,10 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                                     className="flex-1 min-w-0 px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
                                   />
                                   <button
+                                    onMouseDown={(e) => {
+                                      e.preventDefault(); // Prevent input blur
+                                      e.stopPropagation();
+                                    }}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       deleteEvent(event.id);
@@ -461,15 +470,20 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                                     value={editingTaskContent}
                                     onChange={(e) => setEditingTaskContent(e.target.value)}
                                     onBlur={() => {
-                                      if (editingTaskContent.trim()) {
-                                        updateDailyTask(task.id, { content: editingTaskContent });
-                                        setDailyTasks(
-                                          dailyTasks.map((t) =>
-                                            t.id === task.id ? { ...t, content: editingTaskContent } : t
-                                          )
-                                        );
-                                      }
-                                      setEditingTaskId(null);
+                                      // Delay to allow delete button click to register first
+                                      setTimeout(() => {
+                                        if (editingTaskId === task.id) {
+                                          if (editingTaskContent.trim()) {
+                                            updateDailyTask(task.id, { content: editingTaskContent });
+                                            setDailyTasks(
+                                              dailyTasks.map((t) =>
+                                                t.id === task.id ? { ...t, content: editingTaskContent } : t
+                                              )
+                                            );
+                                          }
+                                          setEditingTaskId(null);
+                                        }
+                                      }, 100);
                                     }}
                                     onKeyDown={(e) => {
                                       if (e.key === 'Enter') {
@@ -483,6 +497,10 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                                     className="flex-1 min-w-0 px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                                   />
                                   <button
+                                    onMouseDown={(e) => {
+                                      e.preventDefault(); // Prevent input blur
+                                      e.stopPropagation();
+                                    }}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       deleteDailyTask(task.id);
