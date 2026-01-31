@@ -102,12 +102,12 @@ export function YearView({ onMonthClick }: YearViewProps) {
         className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
       >
         {/* Month Title - 24px, Pretendard 700, #111111, Center aligned */}
-        <h3 className="text-[24px] font-bold leading-[150%] mb-2 text-center" style={{ color: '#111111' }}>
+        <h3 className="text-[24px] font-bold leading-[150%] mb-1 text-center" style={{ color: '#111111' }}>
           {month + 1}월
         </h3>
         
         {/* Week day headers - 17px, Pretendard 500 */}
-        <div className="grid grid-cols-7 gap-x-2 mb-[3px]">
+        <div className="grid grid-cols-7 gap-x-2 mb-1">
           {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
             <div
               key={day}
@@ -124,7 +124,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
         </div>
         
         {/* Divider Line - 350px width, 2px thickness, rounded ends, #E2E2E2 */}
-        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[6px]" />
+        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-1" />
         
         {/* Calendar days - 17px, Pretendard 600, 6px vertical gap between weeks */}
         <div className="grid grid-cols-7 gap-x-2 gap-y-[6px]">
