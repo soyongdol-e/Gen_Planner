@@ -14,8 +14,10 @@ export function TaskSection({ tasks, onTaskToggle, onTaskAdd, onTaskDelete }: Ta
   const [addingHour, setAddingHour] = useState<number | null>(null);
   const [newTaskContent, setNewTaskContent] = useState('');
 
-  // Group tasks by hour (0-23)
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+  // Start from 5:00 to align with TimeTable
+  const START_HOUR = 5;
+  const END_HOUR = 24;
+  const hours = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => i + START_HOUR);
 
   const handleAddTask = (hour: number) => {
     if (newTaskContent.trim()) {
