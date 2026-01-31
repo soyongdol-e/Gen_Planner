@@ -1,10 +1,6 @@
 import { 
   format, 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek,
-  eachDayOfInterval,
+  startOfWeek,
   isSameMonth,
   isSameDay,
   addMonths,
@@ -94,8 +90,9 @@ export const getWeekStart = (date: Date, weekStartsOn: 0 | 1 = 0): Date => {
 
 // Get week dates (7 days)
 export const getWeekDays = (weekStart: Date): Date[] => {
-  return eachDayOfInterval({
-    start: weekStart,
-    end: addDays(weekStart, 6)
-  });
+  const days: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    days.push(addDays(weekStart, i));
+  }
+  return days;
 };
