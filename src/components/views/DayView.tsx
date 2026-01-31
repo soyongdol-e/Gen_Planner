@@ -7,26 +7,36 @@ import {
   getPrevDay
 } from '../../utils/dateUtils';
 import { getTasksByDate, addTask, toggleTask, deleteTask, updateTask } from '../../utils/taskApi';
-import { DailyTask } from '../../types';
+import { getEventsByDate, addEvent, updateEvent, deleteEvent } from '../../utils/eventApi';
+import { DailyTask, Event } from '../../types';
 import TaskItem from '../common/TaskItem';
+import EventItem from '../common/EventItem';
+import EventModal from '../common/EventModal';
 
 export default function DayView() {
   const { selectedDate, setSelectedDate, setCurrentView } = useApp();
   const [tasks, setTasks] = useState<DailyTask[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [newTaskContent, setNewTaskContent] = useState('');
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | undefined>(undefined);
 
-  // Load tasks when date changes
+  // Load tasks and events when date changes
   useEffect(() => {
-    loadTasks();
+    loadData();
   }, [selectedDate]);
 
-  const loadTasks = async () => {
+  const loadData = async () => {
     setLoading(true);
     const dateStr = formatDate(selectedDate);
-    const fetchedTasks = await getTasksByDate(dateStr);
+    const [fetchedTasks, fetchedEvents] = await Promise.all([
+      getTasksByDate(dateStr),
+      getEventsByDate(dateStr)
+    ]);
     setTasks(fetchedTasks);
+    setEvents(fetchedEvents.filter(e => e.is_all_day)); // Only all-day events in Event section
     setLoading(false);
   };
 
@@ -82,6 +92,47 @@ export default function DayView() {
 
   const handleMonthClick = () => {
     setCurrentView('month');
+  };
+
+  // Event handlers
+  const handleAddEvent = async (title: string, color: string, description?: string) => {
+    const dateStr = formatDate(selectedDate);
+    const newEvent = await addEvent(dateStr, title, color, description, true, false);
+    
+    if (newEvent) {
+      setEvents([...events, newEvent]);
+    }
+  };
+
+  const handleEditEvent = (event: Event) => {
+    setEditingEvent(event);
+    setIsEventModalOpen(true);
+  };
+
+  const handleUpdateEvent = async (title: string, color: string, description?: string) => {
+    if (!editingEvent) return;
+    
+    const success = await updateEvent(editingEvent.id, { title, color, description });
+    if (success) {
+      setEvents(events.map(event =>
+        event.id === editingEvent.id
+          ? { ...event, title, color, description }
+          : event
+      ));
+      setEditingEvent(undefined);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    const success = await deleteEvent(eventId);
+    if (success) {
+      setEvents(events.filter(event => event.id !== eventId));
+    }
+  };
+
+  const handleCloseEventModal = () => {
+    setIsEventModalOpen(false);
+    setEditingEvent(undefined);
   };
 
   return (
@@ -193,9 +244,32 @@ export default function DayView() {
         {/* Event Section */}
         <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
           <h3 className="font-semibold mb-4">Event</h3>
-          <button className="w-full text-left text-sm text-gray-400 hover:text-gray-600">
-            + 추가
-          </button>
+          
+          {loading ? (
+            <div className="text-sm text-gray-400">로딩 중...</div>
+          ) : (
+            <>
+              {/* Event List */}
+              <div className="space-y-1 mb-4">
+                {events.map(event => (
+                  <EventItem
+                    key={event.id}
+                    event={event}
+                    onEdit={handleEditEvent}
+                    onDelete={handleDeleteEvent}
+                  />
+                ))}
+              </div>
+
+              {/* Add Event */}
+              <button 
+                onClick={() => setIsEventModalOpen(true)}
+                className="w-full text-left text-sm text-gray-400 hover:text-gray-600"
+              >
+                + 추가
+              </button>
+            </>
+          )}
         </div>
 
         {/* Comment Section */}
@@ -206,6 +280,14 @@ export default function DayView() {
           </div>
         </div>
       </div>
+
+      {/* Event Modal */}
+      <EventModal
+        isOpen={isEventModalOpen}
+        onClose={handleCloseEventModal}
+        onSave={editingEvent ? handleUpdateEvent : handleAddEvent}
+        event={editingEvent}
+      />
     </div>
   );
 }

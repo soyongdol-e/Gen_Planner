@@ -1,22 +1,49 @@
+import { useState, useEffect } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { 
   formatMonthYear, 
   formatDay,
+  formatDate,
   getCalendarDays,
   isToday,
   isInMonth,
   getNextMonth,
   getPrevMonth
 } from '../../utils/dateUtils';
+import { getEventsByMonth } from '../../utils/eventApi';
+import { getTasksByDate } from '../../utils/taskApi';
+import { Event, DailyTask } from '../../types';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 export default function MonthView() {
   const { selectedDate, setSelectedDate, setCurrentView, weekStartsOn } = useApp();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [eventsByDate, setEventsByDate] = useState<Record<string, Event[]>>({});
   
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth() + 1;
   const calendarDays = getCalendarDays(year, month, weekStartsOn);
+
+  // Load events when month changes
+  useEffect(() => {
+    loadEvents();
+  }, [year, month]);
+
+  const loadEvents = async () => {
+    const fetchedEvents = await getEventsByMonth(year, month);
+    setEvents(fetchedEvents);
+    
+    // Group events by date
+    const grouped: Record<string, Event[]> = {};
+    fetchedEvents.forEach(event => {
+      if (!grouped[event.date]) {
+        grouped[event.date] = [];
+      }
+      grouped[event.date].push(event);
+    });
+    setEventsByDate(grouped);
+  };
 
   const handlePrevMonth = () => {
     setSelectedDate(getPrevMonth(selectedDate));
@@ -145,6 +172,9 @@ export default function MonthView() {
                 week.map((date, dayIndex) => {
                   const inMonth = isInMonth(date, selectedDate);
                   const today = isToday(date);
+                  const dateStr = formatDate(date);
+                  const dayEvents = eventsByDate[dateStr] || [];
+                  const allDayEvents = dayEvents.filter(e => e.is_all_day);
                   
                   return (
                     <div 
@@ -161,9 +191,25 @@ export default function MonthView() {
                       }`}>
                         {formatDay(date)}
                       </div>
-                      <div className="space-y-1">
-                        {/* Event indicators will go here */}
-                      </div>
+                      
+                      {/* Event Indicators */}
+                      {inMonth && allDayEvents.length > 0 && (
+                        <div className="flex gap-1 flex-wrap mt-1">
+                          {allDayEvents.slice(0, 3).map(event => (
+                            <div
+                              key={event.id}
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: event.color }}
+                              title={event.title}
+                            />
+                          ))}
+                          {allDayEvents.length > 3 && (
+                            <span className="text-xs text-gray-400">
+                              +{allDayEvents.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })
