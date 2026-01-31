@@ -23,13 +23,14 @@ import {
 } from '../utils/storage';
 
 interface MonthViewProps {
+  initialDate?: Date;
   onYearClick?: () => void;
   onWeekClick?: (date: Date) => void;
   onDayClick?: (date: Date) => void;
 }
 
-export function MonthView({ onYearClick, onWeekClick, onDayClick }: MonthViewProps) {
-  const [currentDate, setCurrentDate] = useState(getToday());
+export function MonthView({ initialDate, onYearClick, onWeekClick, onDayClick }: MonthViewProps) {
+  const [currentDate, setCurrentDate] = useState(initialDate || getToday());
   const [events, setEvents] = useState<Event[]>([]);
   const [memo, setMemo] = useState('');
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
@@ -38,6 +39,13 @@ export function MonthView({ onYearClick, onWeekClick, onDayClick }: MonthViewPro
   
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
+
+  // Sync with external date changes (from YearView or other sources)
+  useEffect(() => {
+    if (initialDate) {
+      setCurrentDate(initialDate);
+    }
+  }, [initialDate]);
   
   // Load events and memo when month changes
   useEffect(() => {

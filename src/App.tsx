@@ -47,6 +47,7 @@ export default function App() {
 
       {currentView === "month" && (
         <MonthView
+          initialDate={selectedDate}
           onYearClick={handleYearClick}
           onWeekClick={handleWeekClick}
           onDayClick={handleDayClick}
