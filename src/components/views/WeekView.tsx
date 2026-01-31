@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Textarea } from '../ui/textarea';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Plus } from 'lucide-react';
 import { NavigationBar } from '../NavigationBar';
 import { WeeklySidebar } from '../WeeklySidebar';
 import type { Event, WeeklyMemo, WeeklyChecklistItem, DailyTask } from '../../types';
@@ -26,6 +26,7 @@ import {
   deleteEvent,
   updateDailyTask,
   deleteDailyTask,
+  addEvent,
 } from '../../utils/storage';
 import { cn } from '../ui/utils';
 
@@ -48,6 +49,9 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingEventTitle, setEditingEventTitle] = useState('');
   const [editingTaskContent, setEditingTaskContent] = useState('');
+  const [addingEventDate, setAddingEventDate] = useState<string | null>(null);
+  const [newEventTitle, setNewEventTitle] = useState('');
+  const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
   const weekEnd = endOfWeek(currentWeekStart);
   const weekStartStr = formatDate(currentWeekStart);
@@ -138,6 +142,27 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
 
   const handleWeekClick = (weekStart: Date) => {
     setCurrentWeekStart(weekStart);
+  };
+
+  const handleAddEvent = (dateStr: string) => {
+    if (newEventTitle.trim()) {
+      // Count existing all-day events for this date to determine order
+      const existingEvents = events.filter((e) => e.date === dateStr && e.isAllDay);
+      const order = existingEvents.length;
+
+      const newEvent: Event = {
+        id: Date.now().toString(),
+        title: newEventTitle.trim(),
+        date: dateStr,
+        isAllDay: true,
+        color: '#ec4899', // Default pink color
+        order,
+      };
+      addEvent(newEvent);
+      setEvents([...events, newEvent]);
+      setNewEventTitle('');
+      setAddingEventDate(null);
+    }
   };
 
   // Generate week days
@@ -250,11 +275,13 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                       'border-r last:border-r-0 p-2 relative group',
                       isToday && 'bg-teal-50/30'
                     )}
+                    onMouseEnter={() => setHoveredDate(dayStr)}
+                    onMouseLeave={() => setHoveredDate(null)}
                   >
                     {/* Background button for day click */}
                     <button
                       onClick={() => onDayClick?.(day)}
-                      className="absolute inset-0 hover:bg-gray-50 transition-colors"
+                      className="absolute inset-0 hover:bg-gray-50 transition-colors z-0"
                     />
 
                     {/* Content (above the button) */}
@@ -353,6 +380,53 @@ export function WeekView({ initialDate, onMonthClick, onDayClick }: WeekViewProp
                             </button>
                           );
                         })}
+
+                        {/* Add Event Button (shows on hover) */}
+                        {hoveredDate === dayStr && !addingEventDate && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setAddingEventDate(dayStr);
+                            }}
+                            className="w-full p-2 border-2 border-dashed border-gray-300 rounded hover:border-pink-400 hover:bg-pink-50 transition-colors flex items-center justify-center gap-1 text-xs text-gray-500 hover:text-pink-600"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>이벤트 추가</span>
+                          </button>
+                        )}
+
+                        {/* Add Event Input */}
+                        {addingEventDate === dayStr && (
+                          <div
+                            className="rounded p-2 bg-white border-2 border-pink-500 shadow-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <input
+                              type="text"
+                              value={newEventTitle}
+                              onChange={(e) => setNewEventTitle(e.target.value)}
+                              onBlur={() => {
+                                if (newEventTitle.trim()) {
+                                  handleAddEvent(dayStr);
+                                } else {
+                                  setAddingEventDate(null);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleAddEvent(dayStr);
+                                }
+                                if (e.key === 'Escape') {
+                                  setAddingEventDate(null);
+                                  setNewEventTitle('');
+                                }
+                              }}
+                              placeholder="이벤트 제목..."
+                              autoFocus
+                              className="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            />
+                          </div>
+                        )}
                       </div>
 
                       {/* Task Blocks */}
