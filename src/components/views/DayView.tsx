@@ -8,7 +8,7 @@ import {
 } from '../../utils/dateUtils';
 import { getTasksByDate, addTask, toggleTask, deleteTask, updateTask } from '../../utils/taskApi';
 import { getEventsByDate, addEvent, updateEvent, deleteEvent } from '../../utils/eventApi';
-import { DailyTask, Event } from '../../types';
+import type { DailyTask, Event } from '../../types';
 import TaskItem from '../common/TaskItem';
 import EventItem from '../common/EventItem';
 import EventModal from '../common/EventModal';
@@ -192,20 +192,21 @@ export default function DayView() {
     }
   };
 
-  const handleBlockMove = async (blockId: string, newStartTime: string, newEndTime: string) => {
-    const success = await updateEvent(blockId, { 
-      start_time: newStartTime,
-      end_time: newEndTime 
-    });
-    
-    if (success) {
-      setTimeBlocks(timeBlocks.map(block =>
-        block.id === blockId
-          ? { ...block, start_time: newStartTime, end_time: newEndTime }
-          : block
-      ));
-    }
-  };
+  // Future feature: Block move functionality
+  // const handleBlockMove = async (blockId: string, newStartTime: string, newEndTime: string) => {
+  //   const success = await updateEvent(blockId, { 
+  //     start_time: newStartTime,
+  //     end_time: newEndTime 
+  //   });
+  //   
+  //   if (success) {
+  //     setTimeBlocks(timeBlocks.map(block =>
+  //       block.id === blockId
+  //         ? { ...block, start_time: newStartTime, end_time: newEndTime }
+  //         : block
+  //     ));
+  //   }
+  // };
 
   const handleCloseTimeBlockModal = () => {
     setIsTimeBlockModalOpen(false);
@@ -325,7 +326,6 @@ export default function DayView() {
                 blocks={timeBlocks}
                 onBlockCreate={handleBlockCreate}
                 onBlockClick={handleBlockClick}
-                onBlockMove={handleBlockMove}
               />
             )}
           </div>

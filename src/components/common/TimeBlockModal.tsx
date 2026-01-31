@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Event } from '../../types';
+import type { Event } from '../../types';
 import { EVENT_COLORS } from '../../utils/constants';
 
 interface TimeBlockModalProps {

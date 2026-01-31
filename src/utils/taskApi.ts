@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { getCurrentUserId } from '../lib/auth';
-import { DailyTask } from '../types';
+import type { DailyTask } from '../types';
 
 // Get tasks for a specific date
 export const getTasksByDate = async (date: string): Promise<DailyTask[]> => {

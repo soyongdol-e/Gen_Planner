@@ -1,10 +1,11 @@
-import { useState, useRef, MouseEvent } from 'react';
-import { Event } from '../../types';
+import { useState, useRef } from 'react';
+import type { MouseEvent } from 'react';
+import type { Event } from '../../types';
 import { 
   getGridConfig, 
   getHourLabels, 
   cellToTime,
-  timeToCellIndex,
+  // timeToCellIndex, // Unused but kept for future use
   calculateBlockHeight,
   calculateBlockTop,
   formatTimeDisplay
@@ -15,7 +16,7 @@ interface TimeTableGridProps {
   blocks: Event[];
   onBlockCreate: (startTime: string, endTime: string) => void;
   onBlockClick: (block: Event) => void;
-  onBlockMove: (blockId: string, newStartTime: string, newEndTime: string) => void;
+  // onBlockMove: (blockId: string, newStartTime: string, newEndTime: string) => void; // Future feature
 }
 
 export default function TimeTableGrid({
@@ -23,12 +24,12 @@ export default function TimeTableGrid({
   blocks,
   onBlockCreate,
   onBlockClick,
-  onBlockMove
+  // onBlockMove // Future feature
 }: TimeTableGridProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [dragEnd, setDragEnd] = useState<number | null>(null);
-  const [movingBlock, setMovingBlock] = useState<{ id: string; offsetY: number } | null>(null);
+  // const [movingBlock, setMovingBlock] = useState<{ id: string; offsetY: number } | null>(null); // Future feature
   const gridRef = useRef<HTMLDivElement>(null);
 
   const config = getGridConfig(unit);
@@ -76,14 +77,11 @@ export default function TimeTableGrid({
     setDragEnd(null);
   };
 
-  // Handle block mouse down (start moving)
-  const handleBlockMouseDown = (e: MouseEvent, blockId: string) => {
+  // Future feature: Handle block mouse down (start moving)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleBlockMouseDown = (e: MouseEvent, _blockId: string) => {
     e.stopPropagation();
-    const blockElement = e.currentTarget as HTMLElement;
-    const rect = blockElement.getBoundingClientRect();
-    const offsetY = e.clientY - rect.top;
-    
-    setMovingBlock({ id: blockId, offsetY });
+    // Future implementation
   };
 
   // Calculate selection highlight

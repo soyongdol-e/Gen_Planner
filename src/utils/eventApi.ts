@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { getCurrentUserId } from '../lib/auth';
-import { Event } from '../types';
+import type { Event } from '../types';
 
 // Get events for a specific date
 export const getEventsByDate = async (date: string): Promise<Event[]> => {

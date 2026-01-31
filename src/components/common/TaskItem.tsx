@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DailyTask } from '../../types';
+import type { DailyTask } from '../../types';
 
 interface TaskItemProps {
   task: DailyTask;

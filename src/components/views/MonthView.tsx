@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../../contexts/AppContext';
 import { 
-  formatMonthYear, 
   formatDay,
   formatDate,
   getCalendarDays,
@@ -13,7 +12,7 @@ import {
 import { getEventsByMonth } from '../../utils/eventApi';
 import { getMonthlyMemo, saveMonthlyMemo } from '../../utils/memoApi';
 import { useAutoSave } from '../../hooks/useAutoSave';
-import { Event } from '../../types';
+import type { Event } from '../../types';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 

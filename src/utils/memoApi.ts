@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { getCurrentUserId } from '../lib/auth';
-import { MonthlyMemo, WeeklyMemo } from '../types';
+import type { MonthlyMemo, WeeklyMemo } from '../types';
 
 // ========== Monthly Memo ==========
 

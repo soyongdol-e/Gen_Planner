@@ -1,7 +1,7 @@
-import { useApp } from '../../contexts/AppContext';
+// import { useApp } from '../../contexts/AppContext';
 
 export default function WeekView() {
-  const { selectedDate } = useApp();
+  // const { selectedDate } = useApp(); // Future feature
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
