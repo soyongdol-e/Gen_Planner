@@ -81,6 +81,11 @@ export default function MonthView() {
     setSelectedDate(new Date());
   };
 
+  const handleWeekClick = (weekFirstDay: Date) => {
+    setSelectedDate(weekFirstDay);
+    setCurrentView('week');
+  };
+
   // Group days by weeks
   const weeks: Date[][] = [];
   for (let i = 0; i < calendarDays.length; i += 7) {
@@ -196,7 +201,11 @@ export default function MonthView() {
         <div className="flex-1 p-6 overflow-auto">
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             {/* Weekday Header */}
-            <div className="grid grid-cols-7 border-b border-gray-200">
+            <div className="grid grid-cols-8 border-b border-gray-200">
+              {/* Week number column header */}
+              <div className="p-3 text-center font-semibold text-gray-400 text-xs">
+                주
+              </div>
               {WEEKDAYS.map((day, index) => (
                 <div 
                   key={day}
@@ -212,52 +221,65 @@ export default function MonthView() {
             </div>
 
             {/* Calendar Days */}
-            <div className="grid grid-cols-7">
+            <div>
               {weeks.map((week, weekIndex) => (
-                week.map((date, dayIndex) => {
-                  const inMonth = isInMonth(date, selectedDate);
-                  const today = isToday(date);
-                  const dateStr = formatDate(date);
-                  const dayEvents = eventsByDate[dateStr] || [];
-                  const allDayEvents = dayEvents.filter(e => e.is_all_day);
+                <div key={weekIndex} className="grid grid-cols-8">
+                  {/* Week selection button */}
+                  <div 
+                    onClick={() => handleWeekClick(week[0])}
+                    className="border-b border-r border-gray-200 p-2 flex items-center justify-center cursor-pointer hover:bg-blue-50 group"
+                  >
+                    <button className="text-xs text-gray-400 group-hover:text-blue-600 font-medium">
+                      주보기
+                    </button>
+                  </div>
                   
-                  return (
-                    <div 
-                      key={`${weekIndex}-${dayIndex}`}
-                      className="border-b border-r border-gray-200 min-h-[100px] p-2 cursor-pointer hover:bg-gray-50"
-                      onClick={() => handleDateClick(date)}
-                    >
-                      <div className={`text-sm mb-1 ${
-                        !inMonth ? 'text-gray-300' : 
-                        today ? 'bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center' :
-                        dayIndex === 0 ? 'text-red-500' :
-                        dayIndex === 6 ? 'text-blue-500' :
-                        'text-gray-700'
-                      }`}>
-                        {formatDay(date)}
-                      </div>
-                      
-                      {/* Event Indicators */}
-                      {inMonth && allDayEvents.length > 0 && (
-                        <div className="flex gap-1 flex-wrap mt-1">
-                          {allDayEvents.slice(0, 3).map(event => (
-                            <div
-                              key={event.id}
-                              className="w-2 h-2 rounded-full"
-                              style={{ backgroundColor: event.color }}
-                              title={event.title}
-                            />
-                          ))}
-                          {allDayEvents.length > 3 && (
-                            <span className="text-xs text-gray-400">
-                              +{allDayEvents.length - 3}
-                            </span>
-                          )}
+                  {/* Week days */}
+                  {week.map((date, dayIndex) => {
+                    const inMonth = isInMonth(date, selectedDate);
+                    const today = isToday(date);
+                    const dateStr = formatDate(date);
+                    const dayEvents = eventsByDate[dateStr] || [];
+                    const allDayEvents = dayEvents.filter(e => e.is_all_day);
+                    
+                    return (
+                      <div 
+                        key={`${weekIndex}-${dayIndex}`}
+                        className="border-b border-r border-gray-200 min-h-[100px] p-2 cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleDateClick(date)}
+                        >
+                        <div className={`text-sm mb-1 ${
+                          !inMonth ? 'text-gray-300' : 
+                          today ? 'bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center' :
+                          dayIndex === 0 ? 'text-red-500' :
+                          dayIndex === 6 ? 'text-blue-500' :
+                          'text-gray-700'
+                        }`}>
+                          {formatDay(date)}
                         </div>
-                      )}
-                    </div>
-                  );
-                })
+                        
+                        {/* Event Indicators */}
+                        {inMonth && allDayEvents.length > 0 && (
+                          <div className="flex gap-1 flex-wrap mt-1">
+                            {allDayEvents.slice(0, 3).map(event => (
+                              <div
+                                key={event.id}
+                                className="w-2 h-2 rounded-full"
+                                style={{ backgroundColor: event.color }}
+                                title={event.title}
+                              />
+                            ))}
+                            {allDayEvents.length > 3 && (
+                              <span className="text-xs text-gray-400">
+                                +{allDayEvents.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               ))}
             </div>
           </div>
