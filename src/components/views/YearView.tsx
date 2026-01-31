@@ -142,24 +142,24 @@ export function YearView({ onMonthClick }: YearViewProps) {
       {/* Navigation */}
       <div className="flex items-center justify-center pt-[62px] pb-8">
         {/* Left Navigation Group - Arrow + Previous Year */}
-        <div className="flex items-center group cursor-pointer" onClick={handlePrevYear}>
+        <div className="flex items-center gap-4 group cursor-pointer" onClick={handlePrevYear}>
           {/* Left Arrow Icon */}
           <ChevronLeft 
             className="size-8 transition-colors group-hover:text-[#505050]" 
             style={{ color: '#999999' }} 
           />
           
-          {/* Previous Year - 40px gap from icon */}
-          <button
+          {/* Previous Year */}
+          <div
             onClick={(e) => {
               e.stopPropagation();
               handleYearClick(prevYear);
             }}
-            className="text-[36px] font-bold leading-[150%] transition-colors ml-10 group-hover:text-[#505050]"
+            className="text-[36px] font-bold leading-[150%] transition-colors group-hover:text-[#505050]"
             style={{ color: '#E2E2E2' }}
           >
             {prevYear}
-          </button>
+          </div>
         </div>
         
         {/* Current Year - 120px gap from previous year */}
@@ -168,9 +168,9 @@ export function YearView({ onMonthClick }: YearViewProps) {
         </div>
         
         {/* Right Navigation Group - Next Year + Arrow */}
-        <div className="flex items-center group cursor-pointer" onClick={handleNextYear}>
+        <div className="flex items-center gap-4 group cursor-pointer" onClick={handleNextYear}>
           {/* Next Year */}
-          <button
+          <div
             onClick={(e) => {
               e.stopPropagation();
               handleYearClick(nextYear);
@@ -179,11 +179,11 @@ export function YearView({ onMonthClick }: YearViewProps) {
             style={{ color: '#E2E2E2' }}
           >
             {nextYear}
-          </button>
+          </div>
           
-          {/* Right Arrow Icon - 40px gap from next year */}
+          {/* Right Arrow Icon */}
           <ChevronRight 
-            className="size-8 transition-colors ml-10 group-hover:text-[#505050]" 
+            className="size-8 transition-colors group-hover:text-[#505050]" 
             style={{ color: '#999999' }} 
           />
         </div>
