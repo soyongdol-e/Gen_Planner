@@ -73,8 +73,13 @@ export function YearView({ onMonthClick }: YearViewProps) {
       });
     }
     
+    // Check if we need to remove the last week (all next month days)
+    const totalDays = days.length;
+    const weeksNeeded = Math.ceil(totalDays / 7);
+    const targetDays = weeksNeeded * 7;
+    
     // Next month days to fill grid
-    const remainingDays = 35 - days.length; // 5 weeks * 7 days
+    const remainingDays = targetDays - days.length;
     for (let i = 1; i <= remainingDays; i++) {
       const nextMonth = month === 11 ? 0 : month + 1;
       const nextYear = month === 11 ? currentYear + 1 : currentYear;
@@ -84,13 +89,20 @@ export function YearView({ onMonthClick }: YearViewProps) {
       });
     }
     
+    // Remove last week if all days are from next month
+    const lastWeekStart = days.length - 7;
+    const lastWeekAllNextMonth = days.slice(lastWeekStart).every(d => !d.isCurrentMonth);
+    if (lastWeekAllNextMonth && days.length > 7) {
+      days.splice(lastWeekStart, 7);
+    }
+    
     return (
       <div
         onClick={() => onMonthClick?.(currentYear, month)}
         className="w-[350px] h-[240px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
       >
-        {/* Month Title - 24px, Pretendard 700, #111111 */}
-        <h3 className="text-[24px] font-bold leading-[150%] mb-2" style={{ color: '#111111' }}>
+        {/* Month Title - 24px, Pretendard 700, #111111, Center aligned */}
+        <h3 className="text-[24px] font-bold leading-[150%] mb-2 text-center" style={{ color: '#111111' }}>
           {month + 1}월
         </h3>
         
@@ -124,18 +136,29 @@ export function YearView({ onMonthClick }: YearViewProps) {
               <div
                 key={idx}
                 className={cn(
-                  'text-[17px] font-semibold leading-[150%] text-center',
-                  isToday && 'bg-black text-white rounded-full',
-                  !isToday && day.isCurrentMonth && 'text-gray-900',
-                  !isToday && !day.isCurrentMonth && 'text-gray-300',
+                  'text-[17px] font-semibold leading-[150%] text-center relative flex items-center justify-center',
+                  isToday && 'text-gray-900',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 0 && 'text-[#FF5B45]',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]',
-                  !isToday && day.isCurrentMonth && day.date.getDay() > 0 && day.date.getDay() < 6 && 'text-[#505050]'
+                  !isToday && day.isCurrentMonth && day.date.getDay() > 0 && day.date.getDay() < 6 && 'text-[#505050]',
+                  !day.isCurrentMonth && 'text-[#999999]'
                 )}
               >
-                {day.date.getDate()}
+                {/* Today highlight circle - 26×26px, #C7F1D4 */}
+                {isToday && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-[26px] h-[26px] rounded-full" style={{ backgroundColor: '#C7F1D4' }} />
+                  </div>
+                )}
+                
+                {/* Date number */}
+                <span className="relative z-10">
+                  {day.date.getDate()}
+                </span>
+                
+                {/* Event indicator */}
                 {hasEvents && !isToday && (
-                  <div className="w-1 h-1 bg-gray-400 rounded-full mx-auto mt-0.5" />
+                  <div className="absolute bottom-0 w-1 h-1 bg-gray-400 rounded-full" />
                 )}
               </div>
             );
