@@ -89,19 +89,22 @@ export function YearView({ onMonthClick }: YearViewProps) {
         onClick={() => onMonthClick?.(currentYear, month)}
         className="w-full text-left"
       >
-        <h3 className="text-heading-sm mb-4 text-center text-gray-900">
-          {month + 1}월
+        <h3 className="text-heading-md mb-6 text-center font-bold text-gray-900 tracking-wide uppercase">
+          {[
+            'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+            'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+          ][month]}
         </h3>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-2">
           {/* Week day headers - abbreviated */}
           {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
             <div
               key={day}
               className={cn(
-                'text-body-xs text-center font-medium mb-1',
+                'text-body-sm text-center font-medium mb-2',
                 idx === 0 && 'text-[#FF5B45]',
                 idx === 6 && 'text-[#358BFB]',
-                idx > 0 && idx < 6 && 'text-gray-900'
+                idx > 0 && idx < 6 && 'text-gray-500'
               )}
             >
               {day}
@@ -117,9 +120,9 @@ export function YearView({ onMonthClick }: YearViewProps) {
               <div
                 key={idx}
                 className={cn(
-                  'text-body-xs text-center py-1',
-                  isToday && 'bg-black text-white rounded-full font-semibold',
-                  !isToday && day.isCurrentMonth && 'text-gray-900',
+                  'text-body-sm text-center py-2 rounded-full transition-colors',
+                  isToday && 'bg-black text-white font-bold',
+                  !isToday && day.isCurrentMonth && 'text-gray-900 hover:bg-gray-50',
                   !isToday && !day.isCurrentMonth && 'text-gray-300',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 0 && 'text-[#FF5B45]',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]'
@@ -140,7 +143,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
   return (
     <div className="h-screen flex flex-col bg-white">
       {/* Navigation */}
-      <div className="flex items-center justify-center gap-4 px-6 py-8 border-b">
+      <div className="flex items-center justify-center gap-6 pt-[62px] pb-8">
         <button
           onClick={handlePrevYear}
           className="p-2 hover:bg-gray-50 rounded-full transition-colors"
@@ -155,7 +158,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
           {prevYear}
         </button>
         
-        <div className="text-display-lg px-8">
+        <div className="text-display-lg font-bold px-8">
           {currentYear}
         </div>
         
@@ -175,9 +178,9 @@ export function YearView({ onMonthClick }: YearViewProps) {
       </div>
       
       {/* 12 Month Grid */}
-      <div className="flex-1 overflow-auto p-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-4 gap-12">
+      <div className="flex-1 overflow-auto px-[192px] py-12">
+        <div className="max-w-[1920px] mx-auto">
+          <div className="grid grid-cols-3 gap-x-16 gap-y-20">
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i}>
                 {renderMiniMonth(i)}
