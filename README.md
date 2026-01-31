@@ -57,18 +57,18 @@
   - Weekly Memo (읽기 전용)
   - Weekly Checklist (토글)
   - 월보기/주보기 버튼
-- **3컬럼 레이아웃**:
-  1. **Task Section** (왼쪽)
-     - 24시간별 할일 관리
-     - 시간대별 추가 버튼
-     - 체크박스 완료 처리
-     - 삭제 버튼
-  2. **TimeTable Section** (중앙)
-     - 24시간 세로 그리드
-     - 일정 추가 (시간/색상)
-     - 블록 형태로 표시
-     - 인라인 편집/삭제
-  3. **Event + Comment** (오른쪽 2단)
+- **메인 2컬럼 레이아웃**:
+  1. **좌측 영역** - Task와 TimeTable 좌우 배치
+     - **Task Section** (왼쪽 절반)
+       - 체크리스트 형태
+       - 체크박스 완료 처리
+       - 삭제 버튼
+     - **TimeTable Section** (오른쪽 절반)
+       - 24시간 세로 그리드
+       - 일정 추가 (시간/색상)
+       - 블록 형태로 표시
+       - 인라인 편집/삭제
+  2. **우측 영역** - Event와 Comment 상하 배치
      - **Event Section** (상단)
        - All-Day Events
        - 드래그 재정렬
@@ -207,10 +207,12 @@ npm run deploy
 5. **하단** → Weekly Memo 작성
 
 ### Day View 사용법
-1. **Task Section**: 시간대별 할일 추가/완료
-2. **TimeTable Section**: 마우스로 일정 추가
-3. **Event Section**: All-Day Event 관리
-4. **Comment Section**: 텍스트/이미지 추가
+1. **좌측 영역**:
+   - **Task Section**: 할일 추가/완료/삭제
+   - **TimeTable Section**: 마우스로 일정 추가
+2. **우측 영역**:
+   - **Event Section**: All-Day Event 관리
+   - **Comment Section**: 텍스트/이미지 추가
 
 ### Year View 사용법
 1. **월 클릭** → Month View 이동
