@@ -87,20 +87,21 @@ export function YearView({ onMonthClick }: YearViewProps) {
     return (
       <button
         onClick={() => onMonthClick?.(currentYear, month)}
-        className="p-4 hover:bg-gray-50 transition-colors"
+        className="w-full text-left"
       >
-        <h3 className="text-heading-sm mb-3 text-center">
+        <h3 className="text-heading-sm mb-4 text-center text-gray-900">
           {month + 1}월
         </h3>
-        <div className="grid grid-cols-7 gap-0.5">
+        <div className="grid grid-cols-7 gap-1">
           {/* Week day headers - abbreviated */}
           {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
             <div
               key={day}
               className={cn(
-                'text-body-xs text-center font-medium',
+                'text-body-xs text-center font-medium mb-1',
                 idx === 0 && 'text-[#FF5B45]',
-                idx === 6 && 'text-[#358BFB]'
+                idx === 6 && 'text-[#358BFB]',
+                idx > 0 && idx < 6 && 'text-gray-900'
               )}
             >
               {day}
@@ -116,18 +117,17 @@ export function YearView({ onMonthClick }: YearViewProps) {
               <div
                 key={idx}
                 className={cn(
-                  'text-body-xs text-center py-0.5',
-                  isToday && 'bg-teal-400 text-white rounded-full',
+                  'text-body-xs text-center py-1',
+                  isToday && 'bg-black text-white rounded-full font-semibold',
                   !isToday && day.isCurrentMonth && 'text-gray-900',
                   !isToday && !day.isCurrentMonth && 'text-gray-300',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 0 && 'text-[#FF5B45]',
-                  !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]',
-                  hasEvents && !isToday && 'font-semibold'
+                  !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]'
                 )}
               >
                 {day.date.getDate()}
                 {hasEvents && !isToday && (
-                  <div className="w-1 h-1 bg-teal-400 rounded-full mx-auto mt-0.5" />
+                  <div className="w-1 h-1 bg-gray-400 rounded-full mx-auto mt-0.5" />
                 )}
               </div>
             );
@@ -138,12 +138,12 @@ export function YearView({ onMonthClick }: YearViewProps) {
   };
   
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
+    <div className="h-screen flex flex-col bg-white">
       {/* Navigation */}
-      <div className="flex items-center justify-center gap-4 px-6 py-6 bg-white border-b">
+      <div className="flex items-center justify-center gap-4 px-6 py-8 border-b">
         <button
           onClick={handlePrevYear}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-gray-50 rounded-full transition-colors"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -168,16 +168,16 @@ export function YearView({ onMonthClick }: YearViewProps) {
         
         <button
           onClick={handleNextYear}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-gray-50 rounded-full transition-colors"
         >
           <ChevronRight className="size-6" />
         </button>
       </div>
       
       {/* 12 Month Grid */}
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-12">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-4 gap-12">
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i}>
                 {renderMiniMonth(i)}
