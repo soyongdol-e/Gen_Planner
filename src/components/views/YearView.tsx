@@ -101,18 +101,18 @@ export function YearView({ onMonthClick }: YearViewProps) {
         onClick={() => onMonthClick?.(currentYear, month)}
         className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
       >
-        {/* Month Title - 24px, Pretendard 700, #111111, Center aligned, Tight line-height */}
-        <h3 className="text-[24px] font-bold leading-none mb-1 text-center" style={{ color: '#111111' }}>
+        {/* Month Title - 24px, Pretendard 700, #111111, Center aligned, No margin */}
+        <h3 className="text-[24px] font-bold leading-none text-center" style={{ color: '#111111' }}>
           {month + 1}월
         </h3>
         
-        {/* Week day headers - 17px, Pretendard 500 - 4px gap from title */}
-        <div className="grid grid-cols-7 gap-x-2 mb-[2px]">
+        {/* Week day headers - 17px, Pretendard 500, tight line-height */}
+        <div className="grid grid-cols-7 gap-x-2 mb-1">
           {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
             <div
               key={day}
               className={cn(
-                'text-[17px] font-medium leading-[150%] text-center',
+                'text-[17px] font-medium leading-none text-center',
                 idx === 0 && 'text-[#FF5B45]',
                 idx === 6 && 'text-[#358BFB]',
                 idx > 0 && idx < 6 && 'text-[#505050]'
@@ -123,11 +123,11 @@ export function YearView({ onMonthClick }: YearViewProps) {
           ))}
         </div>
         
-        {/* Divider Line - 2px thickness, rounded ends, #E2E2E2 - 2px gap from weekdays */}
-        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-1" />
+        {/* Divider Line - 2px thickness, rounded ends, #E2E2E2 */}
+        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[6px]" />
         
-        {/* Calendar days - 15px, Pretendard 600, 4px vertical gap between weeks */}
-        <div className="grid grid-cols-7 gap-x-2 gap-y-1">
+        {/* Calendar days - 15px, Pretendard 600, 6px vertical gap between weeks */}
+        <div className="grid grid-cols-7 gap-x-2 gap-y-[6px]">
           {days.map((day, idx) => {
             const isToday = isSameDay(day.date, today);
             const hasEvents = getEventsForDate(day.date).length > 0;
@@ -136,7 +136,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
               <div
                 key={idx}
                 className={cn(
-                  'text-[15px] font-semibold leading-[150%] text-center relative flex items-center justify-center',
+                  'text-[15px] font-semibold leading-none text-center relative flex items-center justify-center',
                   isToday && 'text-gray-900',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 0 && 'text-[#FF5B45]',
                   !isToday && day.isCurrentMonth && day.date.getDay() === 6 && 'text-[#358BFB]',
