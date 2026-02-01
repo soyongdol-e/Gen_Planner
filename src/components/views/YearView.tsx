@@ -221,7 +221,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
       {/* 12 Month Grid */}
       <div className="flex-1 overflow-auto px-[192px] py-8">
         <div className="max-w-[1920px] mx-auto">
-          <div className="grid grid-cols-4 gap-x-[44px] gap-y-[24px]">
+          <div className="grid grid-cols-4 gap-x-[44px] gap-y-[12px]">
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i}>
                 {renderMiniMonth(i)}
