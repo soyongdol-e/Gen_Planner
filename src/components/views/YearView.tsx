@@ -99,10 +99,10 @@ export function YearView({ onMonthClick }: YearViewProps) {
     return (
       <div
         onClick={() => onMonthClick?.(currentYear, month)}
-        className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer p-4"
+        className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer px-4 py-[14px]"
       >
         {/* Month Title - 24px, Pretendard 700, #111111, Center aligned, No margin */}
-        <h3 className="text-[24px] font-bold leading-none text-center m-0 mb-[20px]" style={{ color: '#111111' }}>
+        <h3 className="text-[24px] font-bold leading-none text-center m-0 mb-[14px]" style={{ color: '#111111' }}>
           {month + 1}월
         </h3>
         
@@ -124,10 +124,10 @@ export function YearView({ onMonthClick }: YearViewProps) {
         </div>
         
         {/* Divider Line - 2px thickness, rounded ends, #E2E2E2 */}
-        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[10px] mt-0" />
+        <div className="w-full h-[2px] bg-[#E2E2E2] rounded-full mb-[10px] mt-[8px]" />
         
-        {/* Calendar days - 15px, Pretendard 600, 10px vertical gap between weeks */}
-        <div className="grid grid-cols-7 gap-x-2 gap-y-[10px] mt-0">
+        {/* Calendar days - 15px, Pretendard 600, 14px vertical gap between weeks */}
+        <div className="grid grid-cols-7 gap-x-2 gap-y-[14px] mt-0">
           {days.map((day, idx) => {
             const isToday = isSameDay(day.date, today);
             const hasEvents = getEventsForDate(day.date).length > 0;
