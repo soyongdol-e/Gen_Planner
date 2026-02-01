@@ -99,7 +99,7 @@ export function YearView({ onMonthClick }: YearViewProps) {
     return (
       <div
         onClick={() => onMonthClick?.(currentYear, month)}
-        className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer px-4 py-[14px]"
+        className="w-[350px] h-[230px] rounded-[14px] hover:bg-gray-50 transition-colors cursor-pointer px-4"
       >
         {/* Month Title - 24px, Pretendard 700, #111111, Center aligned, No margin */}
         <h3 className="text-[24px] font-bold leading-none text-center m-0 mb-[14px]" style={{ color: '#111111' }}>
