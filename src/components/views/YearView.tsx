@@ -172,10 +172,10 @@ export function YearView({ onMonthClick }: YearViewProps) {
     <div className="h-screen flex flex-col bg-white">
       {/* Navigation */}
       <div className="flex items-center justify-center pt-[20px] pb-6">
-        {/* Previous Year - Pretendard Medium - 40px */}
+        {/* Previous Year - Pretendard Medium - 32px */}
         <div
           onClick={() => handleYearClick(prevYear)}
-          className="text-[40px] font-medium leading-[150%] transition-colors hover:text-[#505050] cursor-pointer m-0 p-0"
+          className="text-[32px] font-medium leading-[150%] transition-colors hover:text-[#505050] cursor-pointer m-0 p-0"
           style={{ color: '#E2E2E2' }}
         >
           {prevYear}
@@ -192,8 +192,8 @@ export function YearView({ onMonthClick }: YearViewProps) {
           />
         </div>
         
-        {/* Current Year - Pretendard Extrabold - 50px - 120px gap from arrow */}
-        <div className="text-[50px] font-extrabold leading-[150%] mx-[120px] my-0 p-0">
+        {/* Current Year - Pretendard Extrabold - 40px - 120px gap from arrow */}
+        <div className="text-[40px] font-extrabold leading-[150%] mx-[120px] my-0 p-0">
           {currentYear}
         </div>
         
@@ -208,10 +208,10 @@ export function YearView({ onMonthClick }: YearViewProps) {
           />
         </div>
         
-        {/* Next Year - Pretendard Medium - 40px - 40px gap from arrow */}
+        {/* Next Year - Pretendard Medium - 32px - 40px gap from arrow */}
         <div
           onClick={() => handleYearClick(nextYear)}
-          className="ml-[40px] text-[40px] font-medium leading-[150%] transition-colors hover:text-[#505050] cursor-pointer m-0 p-0"
+          className="ml-[40px] text-[32px] font-medium leading-[150%] transition-colors hover:text-[#505050] cursor-pointer m-0 p-0"
           style={{ color: '#E2E2E2' }}
         >
           {nextYear}
